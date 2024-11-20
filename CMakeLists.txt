@@ -1,13 +1,16 @@
 cmake_minimum_required (VERSION 3.14)
 
-project (template-project ASM C CXX)
+project (BCU-Slave ASM C CXX)
 set(EXECUTABLE ${PROJECT_NAME}.elf)
-set(STLIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/ST-LIB)
+set(STLIB_DIR ${CMAKE_CURRENT_LIST_DIR}/deps/ST-LIB)
 
 option(USE_ETHERNET "Enable ethernet peripheral" OFF)
 option(TARGET_NUCLEO "Targets the STM32H723 Nucleo development board" OFF)
 
-if (PROJECT_IS_TOP_LEVEL)
+message(STATUS "${PROJECT_NAME} Ethernet: ${USE_ETHERNET}")
+message(STATUS "${PROJECT_NAME} Nucleo:   ${TARGET_NUCLEO}")
+
+if (PROJECT_IS_TOP_LEVEL AND NOT CMAKE_CROSSCOMPILING)
   include(FetchContent)
   option(BUILD_GMOCK OFF)
   option(INSTALL_GTEST OFF)
@@ -21,36 +24,37 @@ if (PROJECT_IS_TOP_LEVEL)
   target_link_libraries(GTest::GTest INTERFACE gtest_main)
 endif()
 
+set(STLIB_NAME_SUFFIX slave)
 add_subdirectory(${STLIB_DIR})
 
 set(HAL_HEADER 
-  ${CMAKE_SOURCE_DIR}/Core/Inc/main.h
-  ${CMAKE_SOURCE_DIR}/Core/Inc/stm32h7xx_hal_conf.h
-  ${CMAKE_SOURCE_DIR}/Core/Inc/stm32h7xx_it.h
+  ${CMAKE_CURRENT_LIST_DIR}/Core/Inc/main.h
+  ${CMAKE_CURRENT_LIST_DIR}/Core/Inc/stm32h7xx_hal_conf.h
+  ${CMAKE_CURRENT_LIST_DIR}/Core/Inc/stm32h7xx_it.h
 )
 set(HAL_RUNES
-  ${CMAKE_SOURCE_DIR}/Core/Src/Runes/Runes.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Core/Src/Runes/Runes.cpp
 )
 set(HAL_SOURCE
-  ${CMAKE_SOURCE_DIR}/Core/Src/stm32h7xx_hal_msp.c
-  ${CMAKE_SOURCE_DIR}/Core/Src/stm32h7xx_it.c
-  ${CMAKE_SOURCE_DIR}/Core/Src/syscalls.c
-  ${CMAKE_SOURCE_DIR}/Core/Src/sysmem.c
-  ${CMAKE_SOURCE_DIR}/Core/Src/system_stm32h7xx.c
+  ${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32h7xx_hal_msp.c
+  ${CMAKE_CURRENT_LIST_DIR}/Core/Src/stm32h7xx_it.c
+  ${CMAKE_CURRENT_LIST_DIR}/Core/Src/syscalls.c
+  ${CMAKE_CURRENT_LIST_DIR}/Core/Src/sysmem.c
+  ${CMAKE_CURRENT_LIST_DIR}/Core/Src/system_stm32h7xx.c
 )
 
 set(HALAL_MOCK_RUNES
-  ${CMAKE_SOURCE_DIR}/Core/Src/Runes/SimRunes.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Core/Src/Runes/SimRunes.cpp
 )
 
-file(GLOB_RECURSE SOURCE_C ${CMAKE_SOURCE_DIR}/Core/*.c) 
+file(GLOB_RECURSE SOURCE_C ${CMAKE_CURRENT_LIST_DIR}/Core/*.c) 
 list(REMOVE_ITEM SOURCE_C ${HAL_SOURCE})
-file(GLOB_RECURSE SOURCE_CPP ${CMAKE_SOURCE_DIR}/Core/*.cpp) 
+file(GLOB_RECURSE SOURCE_CPP ${CMAKE_CURRENT_LIST_DIR}/Core/*.cpp) 
 list(REMOVE_ITEM SOURCE_CPP ${HAL_RUNES})
 list(REMOVE_ITEM SOURCE_CPP ${HALAL_MOCK_RUNES})
-file(GLOB_RECURSE SOURCE_H ${CMAKE_SOURCE_DIR}/Core/*.h) 
+file(GLOB_RECURSE SOURCE_H ${CMAKE_CURRENT_LIST_DIR}/Core/*.h) 
 list(REMOVE_ITEM SOURCE_H ${HAL_HEADER})
-file(GLOB_RECURSE SOURCE_HPP ${CMAKE_SOURCE_DIR}/Core/*.hpp) 
+file(GLOB_RECURSE SOURCE_HPP ${CMAKE_CURRENT_LIST_DIR}/Core/*.hpp) 
 
 add_executable(${EXECUTABLE}
 $<$<BOOL:${CMAKE_CROSSCOMPILING}>:${HAL_HEADER}>
@@ -58,15 +62,14 @@ ${SOURCE_H}
 $<$<BOOL:${CMAKE_CROSSCOMPILING}>:${HAL_SOURCE}>
 ${SOURCE_C}
 ${SOURCE_HPP}
-$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${CMAKE_SOURCE_DIR}/Core/Startup/startup_stm32h723zgtx.s>
-${CMAKE_SOURCE_DIR}/Core/Src/Runes/Pins.cpp
+$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${CMAKE_CURRENT_LIST_DIR}/Core/Startup/startup_stm32h723zgtx.s>
+${CMAKE_CURRENT_LIST_DIR}/Core/Src/Runes/Pins.cpp
 $<IF:$<BOOL:${CMAKE_CROSSCOMPILING}>,${HAL_RUNES},${HALAL_MOCK_RUNES}>
 ${SOURCE_CPP}
 )
 
 target_link_libraries(${EXECUTABLE} PRIVATE 
-  st-lib
-  GTest::gtest_main
+  ${STLIB_LIBRARY}
 )
 
 set_target_properties(${EXECUTABLE} PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED C_STANDARD 11 C_STANDARD_REQUIRED)
@@ -77,7 +80,7 @@ target_compile_definitions(${EXECUTABLE} PRIVATE
 
   $<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:SIM_ON>
 
-  $<$<BOOL:${USING_ETHERNET}>:STLIB_ETH>
+  $<$<BOOL:${USE_ETHERNET}>:STLIB_ETH>
   $<IF:$<BOOL:${TARGET_NUCLEO}>,NUCLEO,BOARD>
   $<IF:$<BOOL:${TARGET_NUCLEO}>,HSE_VALUE=8000000,HSE_VALUE=25000000>
 )
@@ -106,7 +109,7 @@ target_compile_options(${EXECUTABLE} PRIVATE
 
 # REMEMBER TO CHANGE `.vscode/C_cpp_properties.json` TO MATCH THIS LIST
 target_include_directories(${EXECUTABLE} PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/Core/Inc
+  ${CMAKE_CURRENT_LIST_DIR}/Core/Inc
   $<$<BOOL:${CMAKE_CROSSCOMPILING}>:${STLIB_DIR}/Drivers/CMSIS/Device/ST/STM32H7xx/Include>
   $<$<BOOL:${CMAKE_CROSSCOMPILING}>:${STLIB_DIR}/Drivers/CMSIS/Include>
   $<$<BOOL:${CMAKE_CROSSCOMPILING}>:${STLIB_DIR}/Drivers/STM32H7xx_HAL_Driver/Inc>
@@ -136,7 +139,7 @@ target_include_directories(${EXECUTABLE} PRIVATE
 )
 
 target_link_options(${EXECUTABLE} PRIVATE 
-  $<$<BOOL:${CMAKE_CROSSCOMPILING}>:-T${CMAKE_SOURCE_DIR}/STM32H723ZGTX_FLASH.ld>
+  $<$<BOOL:${CMAKE_CROSSCOMPILING}>:-T${CMAKE_CURRENT_LIST_DIR}/STM32H723ZGTX_FLASH.ld>
   $<$<BOOL:${CMAKE_CROSSCOMPILING}>:-mcpu=cortex-m7>
   $<$<BOOL:${CMAKE_CROSSCOMPILING}>:-mthumb>
   $<$<BOOL:${CMAKE_CROSSCOMPILING}>:-mfpu=fpv5-d16>
@@ -154,17 +157,16 @@ if (PROJECT_IS_TOP_LEVEL)
     execute_process(
         COMMAND ${CMAKE_COMMAND} -E create_symlink
             ${CMAKE_BINARY_DIR}/compile_commands.json
-            ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json
-    )
-    # Create symlink to executable for IDE to pick it up
-    add_custom_command(
-        TARGET ${EXECUTABLE}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E create_symlink
-        ${CMAKE_BINARY_DIR}/${EXECUTABLE}
-        ${CMAKE_CURRENT_SOURCE_DIR}/out/build/latest.elf
+            ${CMAKE_CURRENT_LIST_DIR}/compile_commands.json
     )
 endif()
 
-include(GoogleTest)
-gtest_discover_tests(${EXECUTABLE} DISCOVERY_MODE PRE_TEST)
+# Create symlink to executable for IDE to pick it up
+add_custom_command(
+  TARGET ${EXECUTABLE}
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E create_symlink
+  ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE}
+  ${CMAKE_SOURCE_DIR}/out/${EXECUTABLE}
+)
+    
