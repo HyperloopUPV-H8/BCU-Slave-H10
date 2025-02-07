@@ -5,8 +5,8 @@
 namespace BCU::Control {
 
 class ParkTransform {
-    float current_active{0.0};
-    float current_reactive{0.0};
+    float current_d{0.0};
+    float current_q{0.0};
 
     const float &electrical_angle;
     const float &current_alpha;
@@ -19,8 +19,8 @@ class ParkTransform {
 
     void execute();
 
-    const float &get_active();
-    const float &get_reactive();
+    const float &get_d();
+    const float &get_q();
 };
 
 }  // namespace BCU::Control

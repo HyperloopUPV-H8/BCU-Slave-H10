@@ -12,13 +12,13 @@ class InverseParkTransform {
     float current_w{0.0};
 
     const float &electrical_angle;
-    const float &current_active;
-    const float &current_reactive;
+    const float &current_d;
+    const float &current_q;
 
    public:
     InverseParkTransform(const float &electrical_angle_source,
-                         const float &current_active_source,
-                         const float &current_reactive_source);
+                         const float &current_d_source,
+                         const float &current_q_source);
 
     void execute();
 
