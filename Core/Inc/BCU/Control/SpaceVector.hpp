@@ -37,8 +37,8 @@ class SpaceVectorPWM {
     void update();
 
    public:
-    float modulation_index{default_modulation_frequency_hz};
-    uint32_t modulation_frequency_hz{default_modulation_index};
+    float modulation_index{default_modulation_index};
+    uint32_t modulation_frequency_hz{default_modulation_frequency_hz};
 
     SpaceVectorPWM(Pin &u, Pin &u_negated, Pin &v, Pin &v_negated, Pin &w,
                    Pin &w_negated);

@@ -4,25 +4,21 @@
 
 namespace BCU::Control {
 
-class ClarkeTransform {
-    float current_alpha{0.0};
-    float current_beta{0.0};
-    float current_zero{0.0};
-
-    const float &current_u;
-    const float &current_v;
-    const float &current_w;
-
-   public:
-    ClarkeTransform(const float &current_u_source,
-                    const float &current_v_source,
-                    const float &current_w_source);
-
-    void execute();
-
-    const float &get_alpha();
-    const float &get_beta();
-    const float &get_zero();
+struct ClarkeOutput {
+    float alpha;
+    float beta;
+    float zero;
 };
+
+// Takes copies to prevent values from changing mid execution
+ClarkeOutput clarke_transform(float current_u, float current_v,
+                              float current_w) {
+    return {
+        .alpha{((2.0f * current_u) - current_v - current_w) / 3.0f},
+        .beta{((float(M_SQRT3) * current_v) - (float(M_SQRT3) * current_w)) /
+              3.0f},
+        .zero{(current_u + current_v + current_w) / 3.0f},
+    };
+}
 
 }  // namespace BCU::Control

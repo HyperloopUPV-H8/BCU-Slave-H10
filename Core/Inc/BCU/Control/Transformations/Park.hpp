@@ -4,23 +4,20 @@
 
 namespace BCU::Control {
 
-class ParkTransform {
-    float current_d{0.0};
-    float current_q{0.0};
-
-    const float &electrical_angle;
-    const float &current_alpha;
-    const float &current_beta;
-
-   public:
-    ParkTransform(const float &electrical_angle_source,
-                  const float &current_alpha_source,
-                  const float &current_beta_source);
-
-    void execute();
-
-    const float &get_d();
-    const float &get_q();
+struct ParkOutput {
+    float d;
+    float q;
 };
+
+// Takes copies to prevent values from changing mid execution
+ParkOutput park_transform(float electrical_angle, float current_alpha,
+                          float current_beta) {
+    return {
+        .d{(current_alpha * sin(electrical_angle)) -
+           (current_beta * cos(electrical_angle))},
+        .q{(current_alpha * cos(electrical_angle)) +
+           (current_beta * sin(electrical_angle))},
+    };
+}
 
 }  // namespace BCU::Control
