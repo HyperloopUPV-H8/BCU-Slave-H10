@@ -1,53 +1,20 @@
 #pragma once
 
-#include "ST-LIB_HIGH/Control/Blocks/PI.hpp"
+#include "ST-LIB.hpp"
 
 namespace BCU::Control {
-
 class VelocityControl {
-    constexpr static float Q_OUT_UPPER_LIMIT{100.0f};
-    constexpr static float Q_OUT_LOWER_LIMIT{0.0f};
+    static constexpr double VELOCITY_SATURATOR_UPPER_LIMIT{100.0};
+    static constexpr double VELOCITY_SATURATOR_LOWER_LIMIT{0.0};
 
-    float vel_reference;
-
-    PI<IntegratorType::Trapezoidal> vel_pi;
+    PI<IntegratorType::Trapezoidal> velocity;
 
    public:
-    VelocityControl(float kp, float ki, float period)
-        : vel_pi(kp, ki, period) {}
+    VelocityControl(double velocity_kp, double velocity_ki, double period);
 
-    float execute(const float &velocity) {
-        vel_pi.input_value = vel_reference - velocity;
+    void execute(double velocity_error);
+    void reset();
 
-        vel_pi.execute();
-
-        float q_out{vel_pi.output_value};
-        if (q_out >= Q_OUT_UPPER_LIMIT)
-            q_out = Q_OUT_UPPER_LIMIT;
-        else if (q_out <= Q_OUT_LOWER_LIMIT)
-            q_out = Q_OUT_LOWER_LIMIT;
-
-        return q_out;
-    }
-
-    void set_velocity_reference(float new_vel) { vel_reference = new_vel; }
-
-    void reset() { vel_pi.reset(); }
-
-    void set_kp(float new_kp) {
-        vel_pi.set_kp(new_kp);
-        vel_pi.reset();
-    }
-
-    void set_ki(float new_ki) {
-        vel_pi.set_ki(new_ki);
-        vel_pi.reset();
-    }
-
-    void set_period(float new_period) {
-        vel_pi.set_period(new_period);
-        vel_pi.reset();
-    }
+    const double &get_desired_q_current() const;
 };
-
 }  // namespace BCU::Control
