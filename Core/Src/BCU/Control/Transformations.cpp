@@ -62,4 +62,14 @@ TwoPhaseSystem RotatingTwoPhaseSystem::inverse_park_transform(
     return TwoPhaseSystem(*this, electrical_angle);
 }
 
+ThreePhaseSystem RotatingTwoPhaseSystem::inverse_clarke_park_transform(
+    float electrical_angle) {
+    return ThreePhaseSystem(TwoPhaseSystem(*this, electrical_angle));
+}
+
+RotatingTwoPhaseSystem ThreePhaseSystem::clarke_park_transform(
+    float electrical_angle) {
+    return RotatingTwoPhaseSystem(TwoPhaseSystem(*this), electrical_angle);
+}
+
 }  // namespace BCU::Control

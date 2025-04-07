@@ -13,6 +13,7 @@ struct ThreePhaseSystem {
     ThreePhaseSystem(TwoPhaseSystem two_phase);
 
     TwoPhaseSystem clarke_transform();
+    RotatingTwoPhaseSystem clarke_park_transform(float electrical_angle);
 };
 
 struct TwoPhaseSystem {
@@ -38,6 +39,7 @@ struct RotatingTwoPhaseSystem {
     RotatingTwoPhaseSystem(TwoPhaseSystem two_phase, float electrical_angle);
 
     TwoPhaseSystem inverse_park_transform(float electrical_angle);
+    ThreePhaseSystem inverse_clarke_park_transform(float electrical_angle);
 };
 
 };  // namespace BCU::Control
