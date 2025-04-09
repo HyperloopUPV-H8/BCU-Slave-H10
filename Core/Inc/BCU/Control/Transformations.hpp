@@ -5,41 +5,41 @@
 namespace BCU::Control {
 
 struct ThreePhaseSystem {
-    float u;
-    float v;
-    float w;
+    double u;
+    double v;
+    double w;
 
-    ThreePhaseSystem(float u, float v, float w);
+    ThreePhaseSystem(double u, double v, double w);
     ThreePhaseSystem(TwoPhaseSystem two_phase);
 
     TwoPhaseSystem clarke_transform();
-    RotatingTwoPhaseSystem clarke_park_transform(float electrical_angle);
+    RotatingTwoPhaseSystem clarke_park_transform(double electrical_angle);
 };
 
 struct TwoPhaseSystem {
-    float alpha;
-    float beta;
-    float zero;
+    double alpha;
+    double beta;
+    double zero;
 
-    TwoPhaseSystem(float alpha, float beta);
+    TwoPhaseSystem(double alpha, double beta);
     TwoPhaseSystem(RotatingTwoPhaseSystem rotating_two_phase,
-                   float electrical_angle);
+                   double electrical_angle);
     TwoPhaseSystem(ThreePhaseSystem three_phase);
 
-    RotatingTwoPhaseSystem park_transform(float electrical_angle);
+    RotatingTwoPhaseSystem park_transform(double electrical_angle);
     ThreePhaseSystem inverse_clarke_transform();
 };
 
 struct RotatingTwoPhaseSystem {
-    float d;
-    float q;
-    float zero;
+    double d;
+    double q;
+    double zero;
 
-    RotatingTwoPhaseSystem(float d, float q);
-    RotatingTwoPhaseSystem(TwoPhaseSystem two_phase, float electrical_angle);
+    RotatingTwoPhaseSystem(double d, double q);
+    RotatingTwoPhaseSystem(TwoPhaseSystem two_phase, double electrical_angle);
 
-    TwoPhaseSystem inverse_park_transform(float electrical_angle);
-    ThreePhaseSystem inverse_clarke_park_transform(float electrical_angle);
+    TwoPhaseSystem inverse_park_transform(double electrical_angle);
+    ThreePhaseSystem inverse_clarke_park_transform(double electrical_angle);
 };
 
 };  // namespace BCU::Control
