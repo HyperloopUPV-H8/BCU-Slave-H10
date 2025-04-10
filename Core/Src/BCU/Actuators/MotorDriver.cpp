@@ -4,12 +4,12 @@ namespace BCU::Actuators {
 
 MotorDriver::MotorDriver(std::array<Pin &, 3> buffer_enable_pin,
                          std::array<Pin &, 4> gate_driver_reset_pin,
-                         std::array<Pin &, 4> motor_u_pin,
-                         std::array<Pin &, 4> motor_u_negated_pin,
-                         std::array<Pin &, 4> motor_v_pin,
-                         std::array<Pin &, 4> motor_v_negated_pin,
-                         std::array<Pin &, 4> motor_w_pin,
-                         std::array<Pin &, 4> motor_w_negated_pin)
+                         std::array<Pin &, 2> motor_u_pin,
+                         std::array<Pin &, 2> motor_u_negated_pin,
+                         std::array<Pin &, 2> motor_v_pin,
+                         std::array<Pin &, 2> motor_v_negated_pin,
+                         std::array<Pin &, 2> motor_w_pin,
+                         std::array<Pin &, 2> motor_w_negated_pin)
     : buffer_enable{DigitalOutput{buffer_enable_pin[0]},
                     DigitalOutput{buffer_enable_pin[1]},
                     DigitalOutput{buffer_enable_pin[2]}},
@@ -18,17 +18,11 @@ MotorDriver::MotorDriver(std::array<Pin &, 3> buffer_enable_pin,
                         DigitalOutput{gate_driver_reset_pin[2]},
                         DigitalOutput{gate_driver_reset_pin[3]}},
       motor_u{DualPWM{motor_u_pin[0], motor_u_negated_pin[0]},
-              DualPWM{motor_u_pin[1], motor_u_negated_pin[1]},
-              DualPWM{motor_u_pin[2], motor_u_negated_pin[2]},
-              DualPWM{motor_u_pin[3], motor_u_negated_pin[3]}},
+              DualPWM{motor_u_pin[1], motor_u_negated_pin[1]}},
       motor_v{DualPWM{motor_v_pin[0], motor_v_negated_pin[0]},
-              DualPWM{motor_v_pin[1], motor_v_negated_pin[1]},
-              DualPWM{motor_v_pin[2], motor_v_negated_pin[2]},
-              DualPWM{motor_v_pin[3], motor_v_negated_pin[3]}},
+              DualPWM{motor_v_pin[1], motor_v_negated_pin[1]}},
       motor_w{DualPWM{motor_w_pin[0], motor_w_negated_pin[0]},
-              DualPWM{motor_w_pin[1], motor_w_negated_pin[1]},
-              DualPWM{motor_w_pin[2], motor_w_negated_pin[2]},
-              DualPWM{motor_w_pin[3], motor_w_negated_pin[3]}} {}
+              DualPWM{motor_w_pin[1], motor_w_negated_pin[1]}} {}
 
 void MotorDriver::enable_buffer() {
     for (uint8_t i{0}; i < buffer_enable.size(); ++i) {

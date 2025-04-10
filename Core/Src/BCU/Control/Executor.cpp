@@ -145,7 +145,7 @@ void Executor::set_angluar_velocity(double angular_velocity) {
 }
 
 void Executor::read_electrical_angle() {
-    double position = position_encoder.get_position();
+    double position = *position_encoder.get_position();
     electrical_angle = position / 0.096;
     electrical_angle -= 2.0 * std::floor(electrical_angle / 2.0);
     electrical_angle *= M_PI;
@@ -154,16 +154,21 @@ void Executor::read_electrical_angle() {
 void Executor::current_control_loop() {
     read_electrical_angle();
 
+    u_current_measurement = motor_driver_sensors.get_motor_phase_u_current();
+    v_current_measurement = motor_driver_sensors.get_motor_phase_v_current();
+    w_current_measurement = motor_driver_sensors.get_motor_phase_w_current();
+
     auto [d_current, q_current, zero] =
-        ThreePhaseSystem{motor_driver_sensors.get_motor_phase_u_current(),
-                         motor_driver_sensors.get_motor_phase_v_current(),
-                         motor_driver_sensors.get_motor_phase_w_current()}
+        ThreePhaseSystem{u_current_measurement, v_current_measurement,
+                         w_current_measurement}
             .clarke_park_transform(electrical_angle);
 
+    d_current_measurement = d_current;
+    q_current_measurement = q_current;
     three_phase_unbalance = zero;
 
-    d_current_error = d_current_reference - d_current;
-    q_current_error = q_current_reference - q_current;
+    d_current_error = d_current_reference - d_current_measurement;
+    q_current_error = q_current_reference - q_current_measurement;
 
     current_control.execute(d_current_error, q_current_error);
 
@@ -200,7 +205,8 @@ void Executor::stop_current_control() {
 }
 
 void Executor::velocity_control_loop() {
-    velocity_error = velocity_reference - position_encoder.get_velocity();
+    velocity_measurement = *position_encoder.get_velocity();
+    velocity_error = velocity_reference - velocity_measurement;
 
     velocity_control.execute(velocity_error);
 
@@ -223,6 +229,25 @@ void Executor::start_velocity_control(double velocity_reference) {
         current_control_period_us, [&]() { current_control_loop(); });
 
     start_motor_driver();
+}
+
+void Executor::stop_velocity_control() {
+    if (control_mode != ControlMode::VELOCITY_CONTROL) return;
+
+    control_mode = ControlMode::IDLE;
+    modulation_mode = ModulationMode::NONE;
+
+    Time::unregister_mid_precision_alarm(velocity_control_alarm_id);
+    velocity_control_alarm_id = UNDEFINED_ALARM_ID;
+
+    Time::unregister_mid_precision_alarm(current_control_alarm_id);
+    current_control_alarm_id = UNDEFINED_ALARM_ID;
+}
+
+void Executor::set_velocity_reference(double velocity_reference) {
+    if (control_mode != ControlMode::VELOCITY_CONTROL) return;
+
+    this->velocity_reference = velocity_reference;
 }
 
 void Executor::use_sine_modulation() {
@@ -276,4 +301,38 @@ void Executor::stop() {
     motor_driver.set_v_duty_cycle(0.0);
     motor_driver.set_w_duty_cycle(0.0);
 }
+
+double *Executor::get_velocity_reference() { return &velocity_reference; }
+double *Executor::get_velocity_error() { return &velocity_error; }
+double *Executor::get_u_current_measurement() { return &u_current_measurement; }
+double *Executor::get_v_current_measurement() { return &v_current_measurement; }
+double *Executor::get_w_current_measurement() { return &w_current_measurement; }
+double *Executor::get_electrical_angle() { return &electrical_angle; }
+double *Executor::get_d_current_reference() { return &d_current_reference; }
+double *Executor::get_d_current_measurement() { return &d_current_measurement; }
+double *Executor::get_d_current_error() { return &d_current_error; }
+double *Executor::get_q_current_reference() { return &q_current_reference; }
+double *Executor::get_q_current_measurement() { return &q_current_measurement; }
+double *Executor::get_q_current_error() { return &q_current_error; }
+double *Executor::get_three_phase_unbalance() { return &three_phase_unbalance; }
+double *Executor::get_d_target_voltage() { return &d_target_voltage; }
+double *Executor::get_q_target_voltage() { return &q_target_voltage; }
+double *Executor::get_u_target_voltage() { return &u_target_voltage; }
+double *Executor::get_v_target_voltage() { return &v_target_voltage; }
+double *Executor::get_w_target_voltage() { return &w_target_voltage; }
+double *Executor::get_u_output_voltage() { return &u_output_voltage; }
+double *Executor::get_v_output_voltage() { return &v_output_voltage; }
+double *Executor::get_w_output_voltage() { return &w_output_voltage; }
+double *Executor::get_u_duty_cycle() { return &u_duty_cycle; }
+double *Executor::get_v_duty_cycle() { return &v_duty_cycle; }
+double *Executor::get_w_duty_cycle() { return &w_duty_cycle; }
+double *Executor::get_angular_velocity() { return &angular_velocity; }
+
+Executor::Executor(Actuators::MotorDriver &motor_driver,
+                   Sensors::MotorDriver &motor_driver_sensors,
+                   Sensors::PositionEncoder &position_encoder)
+    : motor_driver(motor_driver),
+      motor_driver_sensors(motor_driver_sensors),
+      position_encoder(position_encoder) {}
+
 };  // namespace BCU::Control

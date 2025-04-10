@@ -25,6 +25,9 @@ class LEDs {
     void signal_operational();
 
     void signal_fault();
+
+    void signal_boosting();
+    void signal_not_boosting();
 };
 
 };  // namespace BCU::Actuators

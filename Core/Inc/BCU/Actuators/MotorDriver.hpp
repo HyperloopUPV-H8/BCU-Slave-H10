@@ -9,19 +9,19 @@ class MotorDriver {
 
     std::array<DigitalOutput, 4> gate_driver_reset;
 
-    std::array<DualPWM, 4> motor_u;
-    std::array<DualPWM, 4> motor_v;
-    std::array<DualPWM, 4> motor_w;
+    std::array<DualPWM, 2> motor_u;
+    std::array<DualPWM, 2> motor_v;
+    std::array<DualPWM, 2> motor_w;
 
    public:
     MotorDriver(std::array<Pin &, 3> buffer_enable_pin,
                 std::array<Pin &, 4> gate_driver_reset_pin,
-                std::array<Pin &, 4> motor_u_pin,
-                std::array<Pin &, 4> motor_u_negated_pin,
-                std::array<Pin &, 4> motor_v_pin,
-                std::array<Pin &, 4> motor_v_negated_pin,
-                std::array<Pin &, 4> motor_w_pin,
-                std::array<Pin &, 4> motor_w_negated_pin);
+                std::array<Pin &, 2> motor_u_pin,
+                std::array<Pin &, 2> motor_u_negated_pin,
+                std::array<Pin &, 2> motor_v_pin,
+                std::array<Pin &, 2> motor_v_negated_pin,
+                std::array<Pin &, 2> motor_w_pin,
+                std::array<Pin &, 2> motor_w_negated_pin);
 
     void enable_buffer();
     void enable_buffer(uint8_t buffer_id);

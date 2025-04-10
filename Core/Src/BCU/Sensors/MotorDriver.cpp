@@ -164,4 +164,32 @@ const PinState &MotorDriver::get_gate_driver_ready(uint8_t motor_id) const {
     return gate_driver_ready_state[motor_id];
 }
 
+float *MotorDriver::get_dc_link_voltage_ptr() {
+    return &computed_dc_link_voltage;
+}
+
+float *MotorDriver::get_dc_link_voltage_ptr(uint8_t motor_id) {
+    return &dc_link_voltage_value[motor_id];
+}
+
+float *MotorDriver::get_motor_phase_u_current_ptr(uint8_t motor_id) {
+    return &motor_phase_current_value[motor_id][0];
+}
+
+float *MotorDriver::get_motor_phase_v_current_ptr(uint8_t motor_id) {
+    return &motor_phase_current_value[motor_id][1];
+}
+
+float *MotorDriver::get_motor_phase_w_current_ptr(uint8_t motor_id) {
+    return &motor_phase_current_value[motor_id][2];
+}
+
+PinState *MotorDriver::get_gate_driver_fault_ptr(uint8_t motor_id) {
+    return &gate_driver_fault_state[motor_id];
+}
+
+PinState *MotorDriver::get_gate_driver_ready_ptr(uint8_t motor_id) {
+    return &gate_driver_ready_state[motor_id];
+}
+
 };  // namespace BCU::Sensors

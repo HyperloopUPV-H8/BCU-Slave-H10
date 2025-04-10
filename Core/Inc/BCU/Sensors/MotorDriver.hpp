@@ -54,6 +54,16 @@ class MotorDriver {
 
     const PinState &get_gate_driver_fault(uint8_t motor_id) const;
     const PinState &get_gate_driver_ready(uint8_t motor_id) const;
+
+    float *get_dc_link_voltage_ptr();
+    float *get_dc_link_voltage_ptr(uint8_t motor_id);
+
+    float *get_motor_phase_u_current_ptr(uint8_t motor_id);
+    float *get_motor_phase_v_current_ptr(uint8_t motor_id);
+    float *get_motor_phase_w_current_ptr(uint8_t motor_id);
+
+    PinState *get_gate_driver_fault_ptr(uint8_t motor_id);
+    PinState *get_gate_driver_ready_ptr(uint8_t motor_id);
 };
 
 };  // namespace BCU::Sensors

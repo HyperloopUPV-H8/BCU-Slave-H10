@@ -1,8 +1,12 @@
 #pragma once
 
 #include "BCU/Actuators/LEDs.hpp"
+#include "BCU/Actuators/MotorDriver.hpp"
 #include "BCU/Communication/SPI.hpp"
+#include "BCU/Control/Executor.hpp"
 #include "BCU/Pinout.hpp"
+#include "BCU/Sensors/MotorDriver.hpp"
+#include "BCU/Sensors/PositionEncoder.hpp"
 #include "ST-LIB.hpp"
 #include "Shared/StateMachine.hpp"
 
@@ -40,6 +44,13 @@ class Board {
     ProtectionManagerHandle protection_manager{
         state_machine.general_state_machine};
 
+    Actuators::MotorDriver motor_driver;
+
+    Sensors::PositionEncoder position_encoder;
+    Sensors::MotorDriver motor_driver_sensors;
+
+    Control::Executor executor;
+
     Communication::SPI spi;
 
     Actuators::LEDs leds;
@@ -55,6 +66,7 @@ class Board {
     void update_idle();
     void update_ready();
     void update_boosting();
+    void update_testing();
 
    public:
     Board();

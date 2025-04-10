@@ -33,51 +33,63 @@ PositionEncoder::PositionEncoder(std::array<Pin&, 3> sensor_a,
                   sample_time_s)} {}
 
 void PositionEncoder::read() {
+    average_position = 0.0;
+    max_velocity = 0.0;
+
+    size_t active_speetecs{0};
+
     for (auto& speetec : speetecs) {
         speetec.read();
+        if (speetec.is_detecting_something()) {
+            average_position += speetec.position + speetec.position_offset;
+            max_velocity = std::max(max_velocity, speetec.velocity);
+            ++active_speetecs;
+        }
+    }
+
+    average_position /= active_speetecs;
+    is_detecting = active_speetecs > 0;
+}
+
+void PositionEncoder::reset() {
+    for (auto& speetec : speetecs) {
+        speetec.reset();
     }
 }
 
-// Unless the speetecs are perfectly aligned, the average position will cause a
-// small "kick-back" when the next sensor starts reading, this means the
-// position will not be exact when going over two different speetecs
-double PositionEncoder::get_position() {
-    double average_position{0.0};
-    size_t active_speetecs{0};
-
+void PositionEncoder::turn_on() {
     for (auto& speetec : speetecs) {
-        if (!speetec.is_detecting_something()) continue;
-        average_position += speetec.position + speetec.position_offset;
-        ++active_speetecs;
+        speetec.turn_on();
     }
-
-    return average_position / active_speetecs;
 }
 
-// From how we do the position derivative, the max function will prevent the
-// "latency" of the derivative from affecting the result that we would get from
-// the average, which would show the same kick-back as the possition, only that
-// much more prolonged over time, this way the control gets a continuous value
-double PositionEncoder::get_velocity() {
-    double max_velocity{0.0};
+void PositionEncoder::turn_off() {
     for (auto& speetec : speetecs) {
-        if (!speetec.is_detecting_something()) continue;
-        max_velocity = std::max(max_velocity, speetec.velocity);
+        speetec.turn_off();
     }
-    return max_velocity;
 }
 
-double PositionEncoder::get_acceleration() {
-    double total_acceleration{0.0};
-    size_t active_speetecs{0};
+double* PositionEncoder::get_position() { return &average_position; }
 
-    for (auto& speetec : speetecs) {
-        if (!speetec.is_detecting_something()) continue;
-        total_acceleration += speetec.acceleration;
-        ++active_speetecs;
-    }
+double* PositionEncoder::get_velocity() { return &max_velocity; }
 
-    return active_speetecs > 0 ? total_acceleration / active_speetecs : 0.0;
+bool* PositionEncoder::is_detecting_something() { return &is_detecting; }
+
+double* PositionEncoder::get_position_reading(size_t speetec_id) {
+    return &speetecs[speetec_id].position;
+}
+
+double* PositionEncoder::get_velocity_reading(size_t speetec_id) {
+    return &speetecs[speetec_id].velocity;
+}
+
+double* PositionEncoder::get_acceleration_reading(size_t speetec_id) {
+    return &speetecs[speetec_id].acceleration;
+}
+
+Shared::Communication::Direction* PositionEncoder::get_direction_reading(
+    size_t speetec_id) {
+    return (Shared::Communication::Direction*)&speetecs[speetec_id].direction;
 }
 
 };  // namespace BCU::Sensors

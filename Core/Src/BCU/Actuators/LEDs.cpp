@@ -41,4 +41,8 @@ void LEDs::signal_fault() {
     led_fault.turn_on();
 }
 
+void LEDs::signal_boosting() { led_sleep.turn_on(); }
+
+void LEDs::signal_not_boosting() { led_sleep.turn_off(); }
+
 };  // namespace BCU::Actuators
