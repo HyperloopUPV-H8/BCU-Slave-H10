@@ -27,10 +27,18 @@ class MotorDriver {
     bool force_dc_link_voltage{false};
 
    public:
-    MotorDriver(std::array<Pin &, 4> dc_link_voltage_pin,
-                std::array<std::array<Pin &, 3>, 4> motor_phase_current_pin,
-                std::array<Pin &, 4> gate_driver_fault_pin,
-                std::array<Pin &, 4> gate_driver_ready_pin);
+    MotorDriver(Pin& dc_link_voltage_pin_1, Pin& dc_link_voltage_pin_2,
+                Pin& dc_link_voltage_pin_3, Pin& dc_link_voltage_pin_4,
+                Pin& motor_phase_current_u_1, Pin& motor_phase_current_v_1,
+                Pin& motor_phase_current_w_1, Pin& motor_phase_current_u_2,
+                Pin& motor_phase_current_v_2, Pin& motor_phase_current_w_2,
+                Pin& motor_phase_current_u_3, Pin& motor_phase_current_v_3,
+                Pin& motor_phase_current_w_3, Pin& motor_phase_current_u_4,
+                Pin& motor_phase_current_v_4, Pin& motor_phase_current_w_4,
+                Pin& gate_driver_fault_pin_1, Pin& gate_driver_fault_pin_2,
+                Pin& gate_driver_fault_pin_3, Pin& gate_driver_fault_pin_4,
+                Pin& gate_driver_ready_pin_1, Pin& gate_driver_ready_pin_2,
+                Pin& gate_driver_ready_pin_3, Pin& gate_driver_ready_pin_4);
 
     void force_constant_dc_link_voltage(float voltage);
     void unlock_dc_link_voltage();
@@ -41,29 +49,29 @@ class MotorDriver {
     void read_gate_driver_ready();
 
     float get_dc_link_voltage() const;
-    const float &get_dc_link_voltage(uint8_t motor_id) const;
+    const float& get_dc_link_voltage(uint8_t motor_id) const;
 
     float get_motor_phase_u_current() const;
-    const float &get_motor_phase_u_current(uint8_t motor_id) const;
+    const float& get_motor_phase_u_current(uint8_t motor_id) const;
 
     float get_motor_phase_v_current() const;
-    const float &get_motor_phase_v_current(uint8_t motor_id) const;
+    const float& get_motor_phase_v_current(uint8_t motor_id) const;
 
     float get_motor_phase_w_current() const;
-    const float &get_motor_phase_w_current(uint8_t motor_id) const;
+    const float& get_motor_phase_w_current(uint8_t motor_id) const;
 
-    const PinState &get_gate_driver_fault(uint8_t motor_id) const;
-    const PinState &get_gate_driver_ready(uint8_t motor_id) const;
+    const PinState& get_gate_driver_fault(uint8_t motor_id) const;
+    const PinState& get_gate_driver_ready(uint8_t motor_id) const;
 
-    float *get_dc_link_voltage_ptr();
-    float *get_dc_link_voltage_ptr(uint8_t motor_id);
+    float* get_dc_link_voltage_ptr();
+    float* get_dc_link_voltage_ptr(uint8_t motor_id);
 
-    float *get_motor_phase_u_current_ptr(uint8_t motor_id);
-    float *get_motor_phase_v_current_ptr(uint8_t motor_id);
-    float *get_motor_phase_w_current_ptr(uint8_t motor_id);
+    float* get_motor_phase_u_current_ptr(uint8_t motor_id);
+    float* get_motor_phase_v_current_ptr(uint8_t motor_id);
+    float* get_motor_phase_w_current_ptr(uint8_t motor_id);
 
-    PinState *get_gate_driver_fault_ptr(uint8_t motor_id);
-    PinState *get_gate_driver_ready_ptr(uint8_t motor_id);
+    PinState* get_gate_driver_fault_ptr(uint8_t motor_id);
+    PinState* get_gate_driver_ready_ptr(uint8_t motor_id);
 };
 
 };  // namespace BCU::Sensors

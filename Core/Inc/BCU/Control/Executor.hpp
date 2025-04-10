@@ -29,9 +29,9 @@ class Executor {
    private:
     static constexpr uint8_t UNDEFINED_ALARM_ID{UINT8_MAX};
 
-    static constexpr uint32_t test_pwm_period_us{10000};
-    static constexpr uint32_t emulated_movement_period_us{10000};
-    static constexpr uint32_t current_control_period_us{10000};
+    static constexpr uint32_t emulated_movement_period_us{200};
+    static constexpr uint32_t current_control_period_us{200};
+    static constexpr uint32_t velocity_control_period_us{200};
 
     ModulationMode default_modulation_mode{ModulationMode::THIRD_HARMONIC};
 
@@ -45,9 +45,9 @@ class Executor {
     Control::VelocityControl velocity_control{6, 15,
                                               velocity_control_period_us / 1e6};
 
+    Actuators::MotorDriver &motor_driver;
     Sensors::MotorDriver &motor_driver_sensors;
     Sensors::PositionEncoder &position_encoder;
-    Actuators::MotorDriver &motor_driver;
 
     double velocity_reference{0.0};
     double velocity_measurement{0.0};

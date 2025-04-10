@@ -2,27 +2,30 @@
 
 namespace BCU::Actuators {
 
-MotorDriver::MotorDriver(std::array<Pin &, 3> buffer_enable_pin,
-                         std::array<Pin &, 4> gate_driver_reset_pin,
-                         std::array<Pin &, 2> motor_u_pin,
-                         std::array<Pin &, 2> motor_u_negated_pin,
-                         std::array<Pin &, 2> motor_v_pin,
-                         std::array<Pin &, 2> motor_v_negated_pin,
-                         std::array<Pin &, 2> motor_w_pin,
-                         std::array<Pin &, 2> motor_w_negated_pin)
-    : buffer_enable{DigitalOutput{buffer_enable_pin[0]},
-                    DigitalOutput{buffer_enable_pin[1]},
-                    DigitalOutput{buffer_enable_pin[2]}},
-      gate_driver_reset{DigitalOutput{gate_driver_reset_pin[0]},
-                        DigitalOutput{gate_driver_reset_pin[1]},
-                        DigitalOutput{gate_driver_reset_pin[2]},
-                        DigitalOutput{gate_driver_reset_pin[3]}},
-      motor_u{DualPWM{motor_u_pin[0], motor_u_negated_pin[0]},
-              DualPWM{motor_u_pin[1], motor_u_negated_pin[1]}},
-      motor_v{DualPWM{motor_v_pin[0], motor_v_negated_pin[0]},
-              DualPWM{motor_v_pin[1], motor_v_negated_pin[1]}},
-      motor_w{DualPWM{motor_w_pin[0], motor_w_negated_pin[0]},
-              DualPWM{motor_w_pin[1], motor_w_negated_pin[1]}} {}
+MotorDriver::MotorDriver(Pin& buffer_enable_pin_1, Pin& buffer_enable_pin_2,
+                         Pin& buffer_enable_pin_3, Pin& gate_driver_reset_pin_1,
+                         Pin& gate_driver_reset_pin_2,
+                         Pin& gate_driver_reset_pin_3,
+                         Pin& gate_driver_reset_pin_4, Pin& phase_u_pwm_a_pin,
+                         Pin& phase_u_pwm_b_pin, Pin& phase_u_negated_pwm_a_pin,
+                         Pin& phase_u_negated_pwm_b_pin, Pin& phase_v_pwm_a_pin,
+                         Pin& phase_v_pwm_b_pin, Pin& phase_v_negated_pwm_a_pin,
+                         Pin& phase_v_negated_pwm_b_pin, Pin& phase_w_pwm_a_pin,
+                         Pin& phase_w_pwm_b_pin, Pin& phase_w_negated_pwm_a_pin,
+                         Pin& phase_w_negated_pwm_b_pin)
+    : buffer_enable({DigitalOutput{buffer_enable_pin_1},
+                     DigitalOutput{buffer_enable_pin_2},
+                     DigitalOutput{buffer_enable_pin_3}}),
+      gate_driver_reset({DigitalOutput{gate_driver_reset_pin_1},
+                         DigitalOutput{gate_driver_reset_pin_2},
+                         DigitalOutput{gate_driver_reset_pin_3},
+                         DigitalOutput{gate_driver_reset_pin_4}}),
+      motor_u({DualPWM{phase_u_pwm_a_pin, phase_u_negated_pwm_a_pin},
+               DualPWM{phase_u_pwm_b_pin, phase_u_negated_pwm_b_pin}}),
+      motor_v({DualPWM{phase_v_pwm_a_pin, phase_v_negated_pwm_a_pin},
+               DualPWM{phase_v_pwm_b_pin, phase_v_negated_pwm_b_pin}}),
+      motor_w({DualPWM{phase_w_pwm_a_pin, phase_w_negated_pwm_a_pin},
+               DualPWM{phase_w_pwm_b_pin, phase_w_negated_pwm_b_pin}}) {}
 
 void MotorDriver::enable_buffer() {
     for (uint8_t i{0}; i < buffer_enable.size(); ++i) {

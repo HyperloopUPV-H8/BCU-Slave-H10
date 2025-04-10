@@ -4,6 +4,9 @@
 
 namespace BCU::Control {
 
+struct TwoPhaseSystem;
+struct RotatingTwoPhaseSystem;
+
 struct ThreePhaseSystem {
     double u;
     double v;

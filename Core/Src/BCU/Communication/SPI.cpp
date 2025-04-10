@@ -10,6 +10,7 @@ bool SPI::has_received_stop_control_order{false};
 bool SPI::enable_booster{false};
 bool SPI::has_received_force_dc_link{false};
 bool SPI::has_received_unlock_dc_link{false};
+bool SPI::has_received_commutation_settings{false};
 
 SPI::SPI(StateMachine::state_id *slave_general_state,
          StateMachine::state_id *slave_nested_state, double *velocity_reference,

@@ -36,10 +36,11 @@ class PositionEncoder {
     bool is_detecting{false};
 
    public:
-    PositionEncoder(std::array<Pin &, 3> sensor_a,
-                    std::array<Pin &, 3> sensor_b,
-                    std::array<double, 3> position_offset,
-                    double sample_time_s);
+    PositionEncoder(Pin &speetec_1_1_pin, Pin &speetec_1_2_pin,
+                    Pin &speetec_2_1_pin, Pin &speetec_2_2_pin,
+                    Pin &speetec_3_1_pin, Pin &speetec_3_2_pin,
+                    double position_offset_1, double position_offset_2,
+                    double position_offset_3, double sample_time_s);
 
     void read();
     void reset();

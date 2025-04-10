@@ -22,15 +22,18 @@ bool PositionEncoder::Speetec::is_detecting_something() {
            velocity <= -DETECTION_VELOCITY_THRESHOLD;
 }
 
-PositionEncoder::PositionEncoder(std::array<Pin&, 3> sensor_a,
-                                 std::array<Pin&, 3> sensor_b,
-                                 std::array<double, 3> position_offset,
-                                 double sample_time_s)
-    : speetecs{
-          Speetec(sensor_a[0], sensor_b[0], position_offset[0], sample_time_s),
-          Speetec(sensor_a[1], sensor_b[1], position_offset[1], sample_time_s),
-          Speetec(sensor_a[2], sensor_b[2], position_offset[2],
-                  sample_time_s)} {}
+PositionEncoder::PositionEncoder(Pin& speetec_1_1_pin, Pin& speetec_1_2_pin,
+                                 Pin& speetec_2_1_pin, Pin& speetec_2_2_pin,
+                                 Pin& speetec_3_1_pin, Pin& speetec_3_2_pin,
+                                 double position_offset_1,
+                                 double position_offset_2,
+                                 double position_offset_3, double sample_time_s)
+    : speetecs({Speetec{speetec_1_1_pin, speetec_1_2_pin, position_offset_1,
+                        sample_time_s},
+                Speetec{speetec_2_1_pin, speetec_2_2_pin, position_offset_2,
+                        sample_time_s},
+                Speetec{speetec_3_1_pin, speetec_3_2_pin, position_offset_3,
+                        sample_time_s}}) {}
 
 void PositionEncoder::read() {
     average_position = 0.0;
