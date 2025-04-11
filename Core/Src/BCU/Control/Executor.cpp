@@ -54,11 +54,10 @@ void Executor::start_test_pwm(float duty_cycle_u, float duty_cycle_v,
     control_mode = ControlMode::TEST_PWM;
     modulation_mode = ModulationMode::NONE;
 
+    start_motor_driver();
     set_duty_cycle_u(duty_cycle_u);
     set_duty_cycle_v(duty_cycle_v);
     set_duty_cycle_w(duty_cycle_w);
-
-    start_motor_driver();
 }
 
 void Executor::stop_test_pwm() {
@@ -101,6 +100,7 @@ void Executor::start_emulated_movement(float d_current_reference,
     set_q_current_reference(q_current_reference);
     set_angluar_velocity(angular_velocity);
 
+    start_motor_driver();
     emulated_movement_alarm_id =
         Time::register_mid_precision_alarm(emulated_movement_period_us, [&]() {
             electrical_angle +=
@@ -108,8 +108,6 @@ void Executor::start_emulated_movement(float d_current_reference,
 
             modulate_output_voltages();
         });
-
-    start_motor_driver();
 }
 
 void Executor::stop_emulated_movement() {
@@ -188,10 +186,9 @@ void Executor::start_current_control(float d_current_reference,
     set_d_current_reference(d_current_reference);
     set_q_current_reference(q_current_reference);
 
+    start_motor_driver();
     current_control_alarm_id = Time::register_mid_precision_alarm(
         current_control_period_us, [&]() { current_control_loop(); });
-
-    start_motor_driver();
 }
 
 void Executor::stop_current_control() {
@@ -222,13 +219,12 @@ void Executor::start_velocity_control(float velocity_reference) {
 
     set_velocity_reference(velocity_reference);
 
+    start_motor_driver();
     velocity_control_alarm_id = Time::register_mid_precision_alarm(
         velocity_control_period_us, [&]() { velocity_control_loop(); });
 
     current_control_alarm_id = Time::register_mid_precision_alarm(
         current_control_period_us, [&]() { current_control_loop(); });
-
-    start_motor_driver();
 }
 
 void Executor::stop_velocity_control() {

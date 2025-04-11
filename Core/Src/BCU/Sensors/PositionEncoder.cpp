@@ -8,15 +8,18 @@ namespace BCU::Sensors {
 // TODO: Use new speetec implementation
 PositionEncoder::Speetec::Speetec(Pin& sensor_a, Pin& sensor_b,
                                   float position_offset, float sample_time_s)
-    :  // sensor(sensor_a, sensor_b, 0.0001, sample_time_s, &direction,
-       // &position,
-       //        &velocity, &acceleration),
+    : sensor(sensor_a, sensor_b, 0.0001, sample_time_s, &direction, &position,
+             &velocity, &acceleration),
       position_offset(position_offset) {}
 
-void PositionEncoder::Speetec::turn_on() {}   // sensor.turn_on(); }
-void PositionEncoder::Speetec::turn_off() {}  // sensor.turn_off(); }
-void PositionEncoder::Speetec::read() {}      // sensor.read(); }
-void PositionEncoder::Speetec::reset() {}     // sensor.reset(); }
+void PositionEncoder::Speetec::turn_on() { sensor.turn_on(); }
+void PositionEncoder::Speetec::turn_off() { sensor.turn_off(); }
+void PositionEncoder::Speetec::read() { sensor.read(); }
+void PositionEncoder::Speetec::reset() { sensor.reset(); }
+
+float* PositionEncoder::Speetec::get_position() { return &position; }
+float* PositionEncoder::Speetec::get_velocity() { return &velocity; }
+float* PositionEncoder::Speetec::get_acceleration() { return &acceleration; }
 
 bool PositionEncoder::Speetec::is_detecting_something() {
     return velocity >= DETECTION_VELOCITY_THRESHOLD ||
@@ -80,20 +83,20 @@ float* PositionEncoder::get_velocity() { return &max_velocity; }
 bool* PositionEncoder::is_detecting_something() { return &is_detecting; }
 
 float* PositionEncoder::get_position_reading(size_t speetec_id) {
-    return &speetecs[speetec_id].position;
+    return speetecs[speetec_id].get_position();
 }
 
 float* PositionEncoder::get_velocity_reading(size_t speetec_id) {
-    return &speetecs[speetec_id].velocity;
+    return speetecs[speetec_id].get_velocity();
 }
 
 float* PositionEncoder::get_acceleration_reading(size_t speetec_id) {
-    return &speetecs[speetec_id].acceleration;
+    return speetecs[speetec_id].get_acceleration();
 }
 
 Shared::Communication::Direction* PositionEncoder::get_direction_reading(
     size_t speetec_id) {
-    return (Shared::Communication::Direction*)&speetecs[speetec_id].direction;
+    return (Shared::Communication::Direction*)&(speetecs[speetec_id].direction);
 }
 
 };  // namespace BCU::Sensors

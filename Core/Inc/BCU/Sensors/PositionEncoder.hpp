@@ -9,7 +9,7 @@ class PositionEncoder {
     struct Speetec {
         using Encoder = EncoderSensor<500>;
 
-        // Encoder sensor;
+        Encoder sensor;
         float position_offset;
 
         Encoder::Direction direction{Encoder::Direction::FORWARD};
@@ -25,6 +25,10 @@ class PositionEncoder {
 
         void read();
         void reset();
+
+        float *get_position();
+        float *get_velocity();
+        float *get_acceleration();
 
         bool is_detecting_something();
     };

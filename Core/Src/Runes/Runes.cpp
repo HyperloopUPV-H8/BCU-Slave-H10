@@ -133,10 +133,12 @@ bool UART::printf_ready = false;
 #ifdef HAL_TIM_MODULE_ENABLED
 #define BASE TimerPeripheral::TIM_TYPE::BASE
 
-TimerPeripheral encoder_timer(&htim8, {BASE, 0, 65535}, "TIM 8");
+TimerPeripheral timer2(&htim2, {BASE, 0, 65535}, "TIM 2");
+TimerPeripheral timer23{&htim23, {BASE, 0, 65535}, "TIM 23"};
+TimerPeripheral timer24{&htim24, {BASE, 0, 65535}, "TIM 24"};
 
 map<pair<Pin, Pin>, TimerPeripheral*> Encoder::pin_timer_map = {
-    {{PC6, PC7}, &encoder_timer}};
+    {{PF12, PF11}, &timer24}, {{PF0, PF1}, &timer23}, {{PA1, PA0}, &timer2}};
 
 #endif
 /************************************************
@@ -147,24 +149,25 @@ map<pair<Pin, Pin>, TimerPeripheral*> Encoder::pin_timer_map = {
 #define BASE TimerPeripheral::TIM_TYPE::BASE
 #define ADVANCED TimerPeripheral::TIM_TYPE::ADVANCED
 
-TIM_HandleTypeDef* Time::global_timer = &htim2;
-set<TIM_HandleTypeDef*> Time::high_precision_timers = {&htim5, &htim24};
-TIM_HandleTypeDef* Time::mid_precision_timer = &htim23;
+TIM_HandleTypeDef* Time::global_timer = &htim5;
+set<TIM_HandleTypeDef*> Time::high_precision_timers = {};
+TIM_HandleTypeDef* Time::mid_precision_timer = &htim3;
+TIM_HandleTypeDef* Time::low_precision_timer = &htim7;
 
 TimerPeripheral timer1(&htim1, {ADVANCED}, "TIM 1");
-TimerPeripheral timer2(&htim2, {BASE}, "TIM 2");
-TimerPeripheral timer3(&htim3, {ADVANCED}, "TIM 3");
+TimerPeripheral timer3(&htim3, {BASE, 275, UINT32_MAX - 1}, "TIM 3");
+TimerPeripheral timer5(&htim5, {ADVANCED}, "TIM 5");
+TimerPeripheral timer7(&htim7, {BASE}, "TIM 7");
 TimerPeripheral timer4(&htim4, {ADVANCED}, "TIM 4");
 TimerPeripheral timer8{&htim8, {ADVANCED}, "TIM 8"};
 TimerPeripheral timer12(&htim12, {ADVANCED}, "TIM 12");
+TimerPeripheral timer15(&htim15, {ADVANCED}, "TIM 15");
 TimerPeripheral timer16(&htim16, {BASE}, "TIM 16");
 TimerPeripheral timer17(&htim17, {BASE}, "TIM 17");
-TimerPeripheral timer15(&htim15, {ADVANCED}, "TIM 15");
-TimerPeripheral timer23(&htim23, {BASE, 275, UINT32_MAX - 1}, "TIM 23");
 
 vector<reference_wrapper<TimerPeripheral>> TimerPeripheral::timers = {
-    timer1,  timer2,  timer3,  timer4,  timer8,
-    timer12, timer15, timer16, timer17, timer23};
+    timer1, timer3,  timer4,  timer5,  timer7,
+    timer8, timer12, timer15, timer16, timer17};
 
 #endif
 
@@ -179,17 +182,11 @@ vector<reference_wrapper<TimerPeripheral>> TimerPeripheral::timers = {
 PWMmap TimerPeripheral::available_pwm = {
     {PB14, {timer12, {TIM_CHANNEL_1, NORMAL}}},
     {PB15, {timer12, {TIM_CHANNEL_2, NORMAL}}},
-    {PB4, {timer3, {TIM_CHANNEL_1, PHASED}}},
-    {PB5, {timer3, {TIM_CHANNEL_2, NORMAL}}},
-    {PC8, {timer3, {TIM_CHANNEL_3, NORMAL}}},
     {PD12, {timer4, {TIM_CHANNEL_1, NORMAL}}},
     {PD13, {timer4, {TIM_CHANNEL_2, NORMAL}}},
     {PD15, {timer4, {TIM_CHANNEL_4, NORMAL}}},
     {PE14, {timer1, {TIM_CHANNEL_4, PHASED}}},
     {PE6, {timer15, {TIM_CHANNEL_2, NORMAL}}},
-    {PF1, {timer23, {TIM_CHANNEL_2, NORMAL}}},
-    {PF2, {timer23, {TIM_CHANNEL_3, NORMAL}}},
-    {PF3, {timer23, {TIM_CHANNEL_4, NORMAL}}},
     {PE5, {timer15, {TIM_CHANNEL_1, NORMAL}}},
     {PE11, {timer1, {TIM_CHANNEL_2, NORMAL}}},
 };

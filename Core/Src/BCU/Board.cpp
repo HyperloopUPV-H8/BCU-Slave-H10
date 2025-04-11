@@ -52,18 +52,18 @@ Board::Board()
           executor.get_w_output_voltage(), executor.get_u_duty_cycle(),
           executor.get_v_duty_cycle(), executor.get_w_duty_cycle(),
           executor.get_angular_velocity(),
-          {position_encoder.get_position_reading(1),
-           position_encoder.get_position_reading(2),
-           position_encoder.get_position_reading(3)},
-          {position_encoder.get_velocity_reading(1),
-           position_encoder.get_velocity_reading(2),
-           position_encoder.get_velocity_reading(3)},
-          {position_encoder.get_acceleration_reading(1),
-           position_encoder.get_acceleration_reading(2),
-           position_encoder.get_acceleration_reading(3)},
-          {position_encoder.get_direction_reading(1),
-           position_encoder.get_direction_reading(2),
-           position_encoder.get_direction_reading(3)},
+          {position_encoder.get_position_reading(0),
+           position_encoder.get_position_reading(1),
+           position_encoder.get_position_reading(2)},
+          {position_encoder.get_velocity_reading(0),
+           position_encoder.get_velocity_reading(1),
+           position_encoder.get_velocity_reading(2)},
+          {position_encoder.get_acceleration_reading(0),
+           position_encoder.get_acceleration_reading(1),
+           position_encoder.get_acceleration_reading(2)},
+          {position_encoder.get_direction_reading(0),
+           position_encoder.get_direction_reading(1),
+           position_encoder.get_direction_reading(2)},
           position_encoder.get_position(), position_encoder.get_velocity(),
           position_encoder.is_detecting_something(),
           {motor_driver_sensors.get_dc_link_voltage_ptr(0),
@@ -125,24 +125,23 @@ void Board::populate_state_machine() {
     state_machine.general_state_machine.add_transition(
         SharedStateMachine::GeneralState::Connecting,
         SharedStateMachine::GeneralState::Operational, [&]() {
-            return true;
-            // return spi.master_general_state ==
-            //        SharedStateMachine::GeneralState::Operational;
+            return spi.master_general_state ==
+                   SharedStateMachine::GeneralState::Operational;
         });
 
-    // state_machine.general_state_machine.add_transition(
-    //     SharedStateMachine::GeneralState::Connecting,
-    //     SharedStateMachine::GeneralState::Fault, [&]() {
-    //         return spi.master_general_state ==
-    //                SharedStateMachine::GeneralState::Fault;
-    //     });
+    state_machine.general_state_machine.add_transition(
+        SharedStateMachine::GeneralState::Connecting,
+        SharedStateMachine::GeneralState::Fault, [&]() {
+            return spi.master_general_state ==
+                   SharedStateMachine::GeneralState::Fault;
+        });
 
-    // state_machine.general_state_machine.add_transition(
-    //     SharedStateMachine::GeneralState::Operational,
-    //     SharedStateMachine::GeneralState::Fault, [&]() {
-    //         return spi.master_general_state ==
-    //                SharedStateMachine::GeneralState::Fault;
-    //     });
+    state_machine.general_state_machine.add_transition(
+        SharedStateMachine::GeneralState::Operational,
+        SharedStateMachine::GeneralState::Fault, [&]() {
+            return spi.master_general_state ==
+                   SharedStateMachine::GeneralState::Fault;
+        });
 
     // ********************
     // Nested Transitions
@@ -177,7 +176,7 @@ void Board::populate_state_machine() {
         SharedStateMachine::NestedState::Boosting,
         SharedStateMachine::NestedState::Idle, [&]() {
             return !(spi.enable_booster &&
-                     position_encoder.is_detecting_something());
+                     *position_encoder.is_detecting_something());
         });
 
     state_machine.nested_state_machine.add_transition(
