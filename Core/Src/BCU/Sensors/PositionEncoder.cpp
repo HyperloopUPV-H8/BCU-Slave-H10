@@ -7,15 +7,16 @@ namespace BCU::Sensors {
 
 // TODO: Use new speetec implementation
 PositionEncoder::Speetec::Speetec(Pin& sensor_a, Pin& sensor_b,
-                                  double position_offset, double sample_time_s)
-    : sensor(sensor_a, sensor_b, 0.0001, sample_time_s, &direction, &position,
-             &velocity, &acceleration),
+                                  float position_offset, float sample_time_s)
+    :  // sensor(sensor_a, sensor_b, 0.0001, sample_time_s, &direction,
+       // &position,
+       //        &velocity, &acceleration),
       position_offset(position_offset) {}
 
-void PositionEncoder::Speetec::turn_on() { sensor.turn_on(); }
-void PositionEncoder::Speetec::turn_off() { sensor.turn_off(); }
-void PositionEncoder::Speetec::read() { sensor.read(); }
-void PositionEncoder::Speetec::reset() { sensor.reset(); }
+void PositionEncoder::Speetec::turn_on() {}   // sensor.turn_on(); }
+void PositionEncoder::Speetec::turn_off() {}  // sensor.turn_off(); }
+void PositionEncoder::Speetec::read() {}      // sensor.read(); }
+void PositionEncoder::Speetec::reset() {}     // sensor.reset(); }
 
 bool PositionEncoder::Speetec::is_detecting_something() {
     return velocity >= DETECTION_VELOCITY_THRESHOLD ||
@@ -25,9 +26,9 @@ bool PositionEncoder::Speetec::is_detecting_something() {
 PositionEncoder::PositionEncoder(Pin& speetec_1_1_pin, Pin& speetec_1_2_pin,
                                  Pin& speetec_2_1_pin, Pin& speetec_2_2_pin,
                                  Pin& speetec_3_1_pin, Pin& speetec_3_2_pin,
-                                 double position_offset_1,
-                                 double position_offset_2,
-                                 double position_offset_3, double sample_time_s)
+                                 float position_offset_1,
+                                 float position_offset_2,
+                                 float position_offset_3, float sample_time_s)
     : speetecs({Speetec{speetec_1_1_pin, speetec_1_2_pin, position_offset_1,
                         sample_time_s},
                 Speetec{speetec_2_1_pin, speetec_2_2_pin, position_offset_2,
@@ -72,21 +73,21 @@ void PositionEncoder::turn_off() {
     }
 }
 
-double* PositionEncoder::get_position() { return &average_position; }
+float* PositionEncoder::get_position() { return &average_position; }
 
-double* PositionEncoder::get_velocity() { return &max_velocity; }
+float* PositionEncoder::get_velocity() { return &max_velocity; }
 
 bool* PositionEncoder::is_detecting_something() { return &is_detecting; }
 
-double* PositionEncoder::get_position_reading(size_t speetec_id) {
+float* PositionEncoder::get_position_reading(size_t speetec_id) {
     return &speetecs[speetec_id].position;
 }
 
-double* PositionEncoder::get_velocity_reading(size_t speetec_id) {
+float* PositionEncoder::get_velocity_reading(size_t speetec_id) {
     return &speetecs[speetec_id].velocity;
 }
 
-double* PositionEncoder::get_acceleration_reading(size_t speetec_id) {
+float* PositionEncoder::get_acceleration_reading(size_t speetec_id) {
     return &speetecs[speetec_id].acceleration;
 }
 

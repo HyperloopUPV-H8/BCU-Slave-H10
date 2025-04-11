@@ -125,23 +125,24 @@ void Board::populate_state_machine() {
     state_machine.general_state_machine.add_transition(
         SharedStateMachine::GeneralState::Connecting,
         SharedStateMachine::GeneralState::Operational, [&]() {
-            return spi.master_general_state ==
-                   SharedStateMachine::GeneralState::Operational;
+            return true;
+            // return spi.master_general_state ==
+            //        SharedStateMachine::GeneralState::Operational;
         });
 
-    state_machine.general_state_machine.add_transition(
-        SharedStateMachine::GeneralState::Connecting,
-        SharedStateMachine::GeneralState::Fault, [&]() {
-            return spi.master_general_state ==
-                   SharedStateMachine::GeneralState::Fault;
-        });
+    // state_machine.general_state_machine.add_transition(
+    //     SharedStateMachine::GeneralState::Connecting,
+    //     SharedStateMachine::GeneralState::Fault, [&]() {
+    //         return spi.master_general_state ==
+    //                SharedStateMachine::GeneralState::Fault;
+    //     });
 
-    state_machine.general_state_machine.add_transition(
-        SharedStateMachine::GeneralState::Operational,
-        SharedStateMachine::GeneralState::Fault, [&]() {
-            return spi.master_general_state ==
-                   SharedStateMachine::GeneralState::Fault;
-        });
+    // state_machine.general_state_machine.add_transition(
+    //     SharedStateMachine::GeneralState::Operational,
+    //     SharedStateMachine::GeneralState::Fault, [&]() {
+    //         return spi.master_general_state ==
+    //                SharedStateMachine::GeneralState::Fault;
+    //     });
 
     // ********************
     // Nested Transitions

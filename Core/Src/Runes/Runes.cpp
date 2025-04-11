@@ -155,6 +155,7 @@ TimerPeripheral timer1(&htim1, {ADVANCED}, "TIM 1");
 TimerPeripheral timer2(&htim2, {BASE}, "TIM 2");
 TimerPeripheral timer3(&htim3, {ADVANCED}, "TIM 3");
 TimerPeripheral timer4(&htim4, {ADVANCED}, "TIM 4");
+TimerPeripheral timer8{&htim8, {ADVANCED}, "TIM 8"};
 TimerPeripheral timer12(&htim12, {ADVANCED}, "TIM 12");
 TimerPeripheral timer16(&htim16, {BASE}, "TIM 16");
 TimerPeripheral timer17(&htim17, {BASE}, "TIM 17");
@@ -162,8 +163,8 @@ TimerPeripheral timer15(&htim15, {ADVANCED}, "TIM 15");
 TimerPeripheral timer23(&htim23, {BASE, 275, UINT32_MAX - 1}, "TIM 23");
 
 vector<reference_wrapper<TimerPeripheral>> TimerPeripheral::timers = {
-    timer1,  timer2,  timer3,  timer4, timer12,
-    timer15, timer16, timer17, timer23};
+    timer1,  timer2,  timer3,  timer4,  timer8,
+    timer12, timer15, timer16, timer17, timer23};
 
 #endif
 
@@ -195,12 +196,14 @@ PWMmap TimerPeripheral::available_pwm = {
 
 DualPWMmap TimerPeripheral::available_dual_pwms = {
     {{PB8, PB6}, {timer16, {TIM_CHANNEL_1, NORMAL}}},
-    {{PB9, PB7}, {timer17, {TIM_CHANNEL_1, PHASED}}},
-    {{PE11, PE10}, {timer1, {TIM_CHANNEL_2, PHASED}}},
-    {{PE13, PE12}, {timer1, {TIM_CHANNEL_3, PHASED}}},
+    {{PB9, PB7}, {timer17, {TIM_CHANNEL_1, NORMAL}}},
+    {{PE11, PE10}, {timer1, {TIM_CHANNEL_2, NORMAL}}},
+    {{PE13, PE12}, {timer1, {TIM_CHANNEL_3, NORMAL}}},
     {{PE5, PE4}, {timer15, {TIM_CHANNEL_1, NORMAL}}},
     {{PE9, PE8}, {timer1, {TIM_CHANNEL_1, NORMAL}}},
-};
+    {{PC6, PA7}, {timer8, {TIM_CHANNEL_1, NORMAL}}},
+    {{PC7, PB14}, {timer8, {TIM_CHANNEL_2, NORMAL}}},
+    {{PC8, PB15}, {timer8, {TIM_CHANNEL_3, NORMAL}}}};
 
 #endif
 
@@ -250,11 +253,14 @@ map<Pin, ADC::Instance> ADC::available_instances = {
     {PF8, Instance(&peripherals[2], ADC_CHANNEL_7)},
     {PF9, Instance(&peripherals[2], ADC_CHANNEL_2)},
     {PF10, Instance(&peripherals[2], ADC_CHANNEL_6)},
+    {PC1, Instance(&peripherals[2], ADC_CHANNEL_11)},
     {PC2, Instance(&peripherals[2], ADC_CHANNEL_0)},
     {PC3, Instance(&peripherals[2], ADC_CHANNEL_1)},
+    {PC4, Instance(&peripherals[1], ADC_CHANNEL_4)},
     {PF10, Instance(&peripherals[2], ADC_CHANNEL_6)},
     {PC0, Instance(&peripherals[0], ADC_CHANNEL_10)},
     {PA0, Instance(&peripherals[0], ADC_CHANNEL_16)},
+    {PA2, Instance(&peripherals[0], ADC_CHANNEL_14)},
     {PA3, Instance(&peripherals[0], ADC_CHANNEL_15)},
     {PA4, Instance(&peripherals[0], ADC_CHANNEL_18)},
     {PA5, Instance(&peripherals[0], ADC_CHANNEL_19)},

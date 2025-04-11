@@ -49,41 +49,41 @@ class Executor {
     Sensors::MotorDriver &motor_driver_sensors;
     Sensors::PositionEncoder &position_encoder;
 
-    double velocity_reference{0.0};
-    double velocity_measurement{0.0};
-    double velocity_error{0.0};
+    float velocity_reference{0.0};
+    float velocity_measurement{0.0};
+    float velocity_error{0.0};
 
-    double u_current_measurement{0.0};
-    double v_current_measurement{0.0};
-    double w_current_measurement{0.0};
-    double electrical_angle{0.0};
+    float u_current_measurement{0.0};
+    float v_current_measurement{0.0};
+    float w_current_measurement{0.0};
+    float electrical_angle{0.0};
 
-    double d_current_reference{0.0};
-    double d_current_measurement{0.0};
-    double d_current_error{0.0};
+    float d_current_reference{0.0};
+    float d_current_measurement{0.0};
+    float d_current_error{0.0};
 
-    double q_current_reference{0.0};
-    double q_current_measurement{0.0};
-    double q_current_error{0.0};
+    float q_current_reference{0.0};
+    float q_current_measurement{0.0};
+    float q_current_error{0.0};
 
-    double three_phase_unbalance{0.0};
+    float three_phase_unbalance{0.0};
 
-    double d_target_voltage{0.0};
-    double q_target_voltage{0.0};
+    float d_target_voltage{0.0};
+    float q_target_voltage{0.0};
 
-    double u_target_voltage{0.0};
-    double v_target_voltage{0.0};
-    double w_target_voltage{0.0};
+    float u_target_voltage{0.0};
+    float v_target_voltage{0.0};
+    float w_target_voltage{0.0};
 
-    double u_output_voltage{0.0};
-    double v_output_voltage{0.0};
-    double w_output_voltage{0.0};
+    float u_output_voltage{0.0};
+    float v_output_voltage{0.0};
+    float w_output_voltage{0.0};
 
-    double u_duty_cycle{0.0};
-    double v_duty_cycle{0.0};
-    double w_duty_cycle{0.0};
+    float u_duty_cycle{0.0};
+    float v_duty_cycle{0.0};
+    float w_duty_cycle{0.0};
 
-    double angular_velocity{0.0};
+    float angular_velocity{0.0};
 
     ControlMode control_mode{ControlMode::IDLE};
     ModulationMode modulation_mode{ModulationMode::NONE};
@@ -107,59 +107,59 @@ class Executor {
              Sensors::MotorDriver &motor_driver_sensors,
              Sensors::PositionEncoder &position_encoder);
 
-    void start_velocity_control(double velocity_reference);
+    void start_velocity_control(float velocity_reference);
 
-    void start_current_control(double d_current_reference,
-                               double q_current_reference);
+    void start_current_control(float d_current_reference,
+                               float q_current_reference);
 
-    void start_emulated_movement(double d_current_reference,
-                                 double q_current_reference,
-                                 double angular_velocity);
+    void start_emulated_movement(float d_current_reference,
+                                 float q_current_reference,
+                                 float angular_velocity);
 
-    void start_test_pwm(double duty_cycle_u, double duty_cycle_v,
-                        double duty_cycle_w);
+    void start_test_pwm(float duty_cycle_u, float duty_cycle_v,
+                        float duty_cycle_w);
 
     void use_third_harmonic_modulation();
     void use_sine_modulation();
 
-    void set_velocity_reference(double velocity_reference);
+    void set_velocity_reference(float velocity_reference);
 
-    void set_d_current_reference(double current_reference);
-    void set_q_current_reference(double current_reference);
+    void set_d_current_reference(float current_reference);
+    void set_q_current_reference(float current_reference);
 
-    void set_angluar_velocity(double angular_velocity);
+    void set_angluar_velocity(float angular_velocity);
 
-    void set_duty_cycle_u(double duty_cycle);
-    void set_duty_cycle_v(double duty_cycle);
-    void set_duty_cycle_w(double duty_cycle);
+    void set_duty_cycle_u(float duty_cycle);
+    void set_duty_cycle_v(float duty_cycle);
+    void set_duty_cycle_w(float duty_cycle);
 
     void stop();
 
-    double *get_velocity_reference();
-    double *get_velocity_error();
-    double *get_u_current_measurement();
-    double *get_v_current_measurement();
-    double *get_w_current_measurement();
-    double *get_electrical_angle();
-    double *get_d_current_reference();
-    double *get_d_current_measurement();
-    double *get_d_current_error();
-    double *get_q_current_reference();
-    double *get_q_current_measurement();
-    double *get_q_current_error();
-    double *get_three_phase_unbalance();
-    double *get_d_target_voltage();
-    double *get_q_target_voltage();
-    double *get_u_target_voltage();
-    double *get_v_target_voltage();
-    double *get_w_target_voltage();
-    double *get_u_output_voltage();
-    double *get_v_output_voltage();
-    double *get_w_output_voltage();
-    double *get_u_duty_cycle();
-    double *get_v_duty_cycle();
-    double *get_w_duty_cycle();
-    double *get_angular_velocity();
+    float *get_velocity_reference();
+    float *get_velocity_error();
+    float *get_u_current_measurement();
+    float *get_v_current_measurement();
+    float *get_w_current_measurement();
+    float *get_electrical_angle();
+    float *get_d_current_reference();
+    float *get_d_current_measurement();
+    float *get_d_current_error();
+    float *get_q_current_reference();
+    float *get_q_current_measurement();
+    float *get_q_current_error();
+    float *get_three_phase_unbalance();
+    float *get_d_target_voltage();
+    float *get_q_target_voltage();
+    float *get_u_target_voltage();
+    float *get_v_target_voltage();
+    float *get_w_target_voltage();
+    float *get_u_output_voltage();
+    float *get_v_output_voltage();
+    float *get_w_output_voltage();
+    float *get_u_duty_cycle();
+    float *get_v_duty_cycle();
+    float *get_w_duty_cycle();
+    float *get_angular_velocity();
 };
 
 };  // namespace BCU::Control

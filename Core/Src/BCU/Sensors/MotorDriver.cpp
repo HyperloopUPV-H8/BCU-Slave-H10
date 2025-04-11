@@ -81,7 +81,7 @@ MotorDriver::MotorDriver(
       }} {}
 
 void MotorDriver::read_dc_link_voltage() {
-    double average_value{0};
+    float average_value{0};
     for (auto& sensor : dc_link_voltage) {
         sensor.read();
         average_value += *sensor.get_value_pointer();

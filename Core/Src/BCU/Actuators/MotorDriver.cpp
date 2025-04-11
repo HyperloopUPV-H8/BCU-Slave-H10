@@ -34,7 +34,7 @@ void MotorDriver::enable_buffer() {
 }
 
 void MotorDriver::enable_buffer(uint8_t buffer_id) {
-    buffer_enable[buffer_id].turn_on();
+    buffer_enable[buffer_id].turn_off();
 }
 
 void MotorDriver::disable_buffer() {
@@ -44,7 +44,7 @@ void MotorDriver::disable_buffer() {
 }
 
 void MotorDriver::disable_buffer(uint8_t buffer_id) {
-    buffer_enable[buffer_id].turn_off();
+    buffer_enable[buffer_id].turn_on();
 }
 
 void MotorDriver::turn_reset_on() {
