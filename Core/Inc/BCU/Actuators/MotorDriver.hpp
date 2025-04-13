@@ -4,20 +4,40 @@
 
 namespace BCU::Actuators {
 
+class ThreePhasePWM {
+    DualPWM phase_u;
+    DualPWM phase_v;
+    DualPWM phase_w;
+
+   public:
+    ThreePhasePWM(Pin& phase_u_pin, Pin& phase_u_negated_pin, Pin& phase_v_pin,
+                  Pin& phase_v_negated_pin, Pin& phase_w_pin,
+                  Pin& phase_w_negated_pin);
+
+    void turn_on();
+    void turn_off();
+
+    void set_duty_cycle_u(float duty_cycle);
+    void set_duty_cycle_v(float duty_cycle);
+    void set_duty_cycle_w(float duty_cycle);
+
+    void set_commutation_frequency_hz(uint32_t frequency_hz);
+    void set_dead_time_ns(uint32_t dead_time_ns);
+};
+
 class MotorDriver {
     std::array<DigitalOutput, 3> buffer_enable;
 
     std::array<DigitalOutput, 4> gate_driver_reset;
 
-    std::array<DualPWM, 2> motor_u;
-    std::array<DualPWM, 2> motor_v;
-    std::array<DualPWM, 2> motor_w;
+    ThreePhasePWM motor_a_pwm;
+    ThreePhasePWM motor_b_pwm;
 
    public:
-    MotorDriver(Pin& buffer_enable_pin_1, Pin& buffer_enable_pin_2,
-                Pin& buffer_enable_pin_3, Pin& gate_driver_reset_pin_1,
-                Pin& gate_driver_reset_pin_2, Pin& gate_driver_reset_pin_3,
-                Pin& gate_driver_reset_pin_4, Pin& phase_u_pwm_a_pin,
+    MotorDriver(Pin& buffer_1_enable_pin, Pin& buffer_2_enable_pin,
+                Pin& buffer_3_enable_pin, Pin& gate_driver_1_reset_pin,
+                Pin& gate_driver_2_reset_pin, Pin& gate_driver_3_reset_pin,
+                Pin& gate_driver_4_reset_pin, Pin& phase_u_pwm_a_pin,
                 Pin& phase_u_pwm_b_pin, Pin& phase_u_negated_pwm_a_pin,
                 Pin& phase_u_negated_pwm_b_pin, Pin& phase_v_pwm_a_pin,
                 Pin& phase_v_pwm_b_pin, Pin& phase_v_negated_pwm_a_pin,
@@ -25,33 +45,15 @@ class MotorDriver {
                 Pin& phase_w_pwm_b_pin, Pin& phase_w_negated_pwm_a_pin,
                 Pin& phase_w_negated_pwm_b_pin);
 
-    void enable_buffer();
-    void enable_buffer(uint8_t buffer_id);
-    void disable_buffer();
-    void disable_buffer(uint8_t buffer_id);
+    void turn_on();
+    void turn_off();
 
-    void turn_reset_on();
-    void turn_reset_on(uint8_t gate_driver_id);
-    void turn_reset_off();
-    void turn_reset_off(uint8_t gate_driver_id);
+    void set_duty_cycle_u(float duty_cycle);
+    void set_duty_cycle_v(float duty_cycle);
+    void set_duty_cycle_w(float duty_cycle);
 
-    void turn_on_pwms();
-    void turn_on_pwms(uint8_t motor_id);
-    void turn_off_pwms();
-    void turn_off_pwms(uint8_t motor_id);
-
-    void set_u_duty_cycle(float duty_cycle);
-    void set_u_duty_cycle(float duty_cycle, uint8_t motor_id);
-    void set_v_duty_cycle(float duty_cycle);
-    void set_v_duty_cycle(float duty_cycle, uint8_t motor_id);
-    void set_w_duty_cycle(float duty_cycle);
-    void set_w_duty_cycle(float duty_cycle, uint8_t motor_id);
-
-    void set_frequency(uint32_t frequency);
-    void set_frequency(uint32_t frequency, uint8_t motor_id);
-
-    void set_dead_time(std::chrono::nanoseconds dead_time_ns);
-    void set_dead_time(std::chrono::nanoseconds dead_time_ns, uint8_t motor_id);
+    void set_commutation_frequency_hz(uint32_t frequency_hz);
+    void set_dead_time_ns(uint32_t dead_time_ns);
 };
 
 };  // namespace BCU::Actuators
