@@ -7,17 +7,22 @@ namespace BCU::Control {
 
 class Executor {
    public:
-    enum ControlMode : uint8_t {
-        IDLE = 0,
-        TEST_PWM = 1,
-    };
+    enum ControlMode : uint8_t { IDLE = 0, TEST_PWM = 1, SPACE_VECTOR = 2 };
 
    private:
+    static constexpr uint32_t space_vector_period_us{200};
+
     ControlMode mode{ControlMode::IDLE};
+
+    uint8_t space_vector_alarm_id{0};
 
     float duty_cycle_u{0.0f};
     float duty_cycle_v{0.0f};
     float duty_cycle_w{0.0f};
+
+    float modulation_index{0.0f};
+    float modulation_frequency_hz{0.0f};
+    float space_vector_time{0.0f};
 
     Actuators::MotorDriver &motor_driver;
 
@@ -34,6 +39,11 @@ class Executor {
     void set_duty_cycle_u(float duty_cycle);
     void set_duty_cycle_v(float duty_cycle);
     void set_duty_cycle_w(float duty_cycle);
+
+    void start_space_vector(float modulation_index,
+                            float modulation_frequency_hz);
+    void set_modulation_index(float modulation_index);
+    void set_modulation_frequency_hz(float modulation_frequency_hz);
 
     void stop();
 

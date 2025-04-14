@@ -19,9 +19,13 @@ Board::Board()
       executor(motor_driver),
       spi(Pinout::spi_ready_slave_pin,
           &state_machine.general_state_machine.current_state,
-          &state_machine.nested_state_machine.current_state),
+          &state_machine.nested_state_machine.current_state,
+          executor.get_duty_cycle_u_ptr(), executor.get_duty_cycle_v_ptr(),
+          executor.get_duty_cycle_w_ptr()),
       stlib() {
     populate_state_machine();
+
+    motor_driver.turn_off();
 
     spi.start();
 
@@ -64,8 +68,10 @@ void Board::populate_state_machine() {
 
     state_machine.nested_state_machine.add_transition(
         SharedStateMachine::NestedState::Idle,
-        SharedStateMachine::NestedState::Testing,
-        [&]() { return spi.has_received_start_test_pwm; });
+        SharedStateMachine::NestedState::Testing, [&]() {
+            return spi.has_received_start_test_pwm ||
+                   spi.has_received_start_space_vector;
+        });
 
     state_machine.nested_state_machine.add_transition(
         SharedStateMachine::NestedState::Testing,
@@ -88,9 +94,9 @@ void Board::populate_state_machine() {
             executor.stop();
 
             spi.has_received_start_test_pwm = false;
-            spi.has_received_stop_control = false;
+            spi.has_received_start_space_vector = false;
         },
-        SharedStateMachine::NestedState::Idle);
+        SharedStateMachine::GeneralState::Fault);
 
     state_machine.nested_state_machine.add_enter_action(
         [&]() {
@@ -98,11 +104,26 @@ void Board::populate_state_machine() {
                 executor.start_test_pwm(spi.requested_duty_cycle_u,
                                         spi.requested_duty_cycle_v,
                                         spi.requested_duty_cycle_w);
+            } else if (spi.has_received_start_space_vector) {
+                executor.start_space_vector(
+                    spi.requested_modulation_index,
+                    spi.requested_modulation_frequency_hz);
             }
 
             spi.has_received_start_test_pwm = false;
+            spi.has_received_start_space_vector = false;
         },
         SharedStateMachine::NestedState::Testing);
+
+    state_machine.nested_state_machine.add_enter_action(
+        [&]() {
+            executor.stop();
+
+            spi.has_received_start_test_pwm = false;
+            spi.has_received_start_space_vector = false;
+            spi.has_received_stop_control = false;
+        },
+        SharedStateMachine::NestedState::Idle);
 }
 
 void Board::update() {
@@ -170,6 +191,12 @@ void Board::update_testing() {
         executor.set_duty_cycle_w(spi.requested_duty_cycle_w);
 
         spi.has_received_start_test_pwm = false;
+    } else if (spi.has_received_start_space_vector) {
+        executor.set_modulation_index(spi.requested_modulation_index);
+        executor.set_modulation_frequency_hz(
+            spi.requested_modulation_frequency_hz);
+
+        spi.has_received_start_space_vector = false;
     }
 }
 
