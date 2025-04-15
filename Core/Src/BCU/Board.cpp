@@ -16,12 +16,20 @@ Board::Board()
                    Pinout::phase_v_negated_pwm_b_pin, Pinout::phase_w_pwm_a_pin,
                    Pinout::phase_w_pwm_b_pin, Pinout::phase_w_negated_pwm_a_pin,
                    Pinout::phase_w_negated_pwm_b_pin),
+      motor_sensors(
+          Pinout::dc_link_voltage_1_pin, Pinout::dc_link_voltage_2_pin,
+          Pinout::dc_link_voltage_3_pin, Pinout::dc_link_voltage_4_pin),
       executor(motor_driver),
       spi(Pinout::spi_ready_slave_pin,
           &state_machine.general_state_machine.current_state,
           &state_machine.nested_state_machine.current_state,
           executor.get_duty_cycle_u_ptr(), executor.get_duty_cycle_v_ptr(),
-          executor.get_duty_cycle_w_ptr()),
+          executor.get_duty_cycle_w_ptr(),
+          motor_sensors.get_dc_link_voltage_ptr(0),
+          motor_sensors.get_dc_link_voltage_ptr(0),
+          motor_sensors.get_dc_link_voltage_ptr(1),
+          motor_sensors.get_dc_link_voltage_ptr(2),
+          motor_sensors.get_dc_link_voltage_ptr(3)),
       stlib() {
     populate_state_machine();
 
@@ -34,6 +42,9 @@ Board::Board()
 
     Time::register_low_precision_alarm(
         1, [&]() { protection_manager.update_low_frequency(); });
+
+    Time::register_mid_precision_alarm(
+        1000, [&]() { motor_sensors.read_dc_link_voltage(); });
 }
 
 void Board::populate_state_machine() {
@@ -153,6 +164,18 @@ void Board::update_operational() {
         motor_driver.set_dead_time_ns(spi.requested_dead_time_ns);
 
         spi.has_received_configure_commutation_parameters = false;
+    }
+
+    if (spi.has_received_fix_dc_link_voltage) {
+        motor_sensors.fix_dc_link_voltage(spi.requested_dc_link_voltage);
+
+        spi.has_received_fix_dc_link_voltage = false;
+    }
+
+    if (spi.has_received_unfix_dc_link_voltage) {
+        motor_sensors.unfix_dc_link_voltage();
+
+        spi.has_received_unfix_dc_link_voltage = false;
     }
 
     switch (state_machine.nested_state_machine.current_state) {

@@ -4,6 +4,7 @@
 #include "BCU/Communication/SPI.hpp"
 #include "BCU/Control/Executor.hpp"
 #include "BCU/Pinout.hpp"
+#include "BCU/Sensors/MotorSensors.hpp"
 #include "ST-LIB.hpp"
 #include "Shared/StateMachine.hpp"
 
@@ -40,6 +41,8 @@ class Board {
         state_machine.general_state_machine};
 
     Actuators::MotorDriver motor_driver;
+
+    Sensors::MotorSensors motor_sensors;
 
     Control::Executor executor;
 
