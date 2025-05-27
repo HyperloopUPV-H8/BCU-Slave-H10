@@ -45,34 +45,11 @@ void ThreePhasePWM::set_dead_time_ns(uint32_t dead_time_ns) {
     phase_w.set_dead_time(std::chrono::nanoseconds(dead_time_ns));
 }
 
-MotorDriver::MotorDriver(Pin& buffer_enable_pin_1, Pin& buffer_enable_pin_2,
-                         Pin& buffer_enable_pin_3, Pin& gate_driver_reset_pin_1,
-                         Pin& gate_driver_reset_pin_2,
-                         Pin& gate_driver_reset_pin_3,
-                         Pin& gate_driver_reset_pin_4, Pin& phase_u_pwm_a_pin,
-                         Pin& phase_u_pwm_b_pin, Pin& phase_u_negated_pwm_a_pin,
-                         Pin& phase_u_negated_pwm_b_pin, Pin& phase_v_pwm_a_pin,
-                         Pin& phase_v_pwm_b_pin, Pin& phase_v_negated_pwm_a_pin,
-                         Pin& phase_v_negated_pwm_b_pin, Pin& phase_w_pwm_a_pin,
-                         Pin& phase_w_pwm_b_pin, Pin& phase_w_negated_pwm_a_pin,
-                         Pin& phase_w_negated_pwm_b_pin)
-    : buffer_enable{DigitalOutput{buffer_enable_pin_1},
-                    DigitalOutput{buffer_enable_pin_2},
-                    DigitalOutput{buffer_enable_pin_3}},
-      gate_driver_reset{DigitalOutput{gate_driver_reset_pin_1},
-                        DigitalOutput{gate_driver_reset_pin_2},
-                        DigitalOutput{gate_driver_reset_pin_3},
-                        DigitalOutput{gate_driver_reset_pin_4}},
-      motor_a_pwm{phase_u_pwm_a_pin, phase_u_negated_pwm_a_pin,
-                  phase_v_pwm_a_pin, phase_v_negated_pwm_a_pin,
-                  phase_w_pwm_a_pin, phase_w_negated_pwm_a_pin},
-      motor_b_pwm{phase_u_pwm_b_pin, phase_u_negated_pwm_b_pin,
-                  phase_v_pwm_b_pin, phase_v_negated_pwm_b_pin,
-                  phase_w_pwm_b_pin, phase_w_negated_pwm_b_pin} {}
+MotorDriver::MotorDriver() {}
 
 void MotorDriver::turn_on() {
     for (auto& buffer : buffer_enable) {
-        buffer.turn_off();  // enable @ logic level low
+        buffer.turn_off();  // buffer enable is active low
     }
     for (auto& reset : gate_driver_reset) {
         reset.turn_on();
@@ -83,7 +60,7 @@ void MotorDriver::turn_on() {
 
 void MotorDriver::turn_off() {
     for (auto& buffer : buffer_enable) {
-        buffer.turn_on();  // disable @ logic level high
+        buffer.turn_on();  // buffer enable is active low
     }
     for (auto& reset : gate_driver_reset) {
         reset.turn_off();
