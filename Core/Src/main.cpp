@@ -4,13 +4,13 @@
 #include "lwip.h"
 #endif
 
-#include "ST-LIB.hpp"
+#include "BCU/Board.hpp"
 
 int main(void) {
-    STLIB::start();
+    BCU::Board board;
 
     while (1) {
-        STLIB::update();
+        board.update();
     }
 }
 
