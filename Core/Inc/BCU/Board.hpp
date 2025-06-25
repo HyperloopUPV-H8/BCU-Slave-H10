@@ -54,7 +54,8 @@ class Board {
     Actuators::MotorDriver motor_driver;
     Actuators::LEDs leds;
 
-    Control::Executor executor{motor_driver};
+    Control::Executor executor{motor_sensors, current_sense, position_sense,
+                               motor_driver};
 
     Communication::SPI spi{
         &state_machine.general.current_state,

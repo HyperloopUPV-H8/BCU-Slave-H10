@@ -122,13 +122,13 @@ void Board::update_operational_precharge() {}
 
 void Board::update_operational_ready() {
     if (spi.has_received_enable_current_control) {
-        executor.configure_current_control(spi.requested_current_d,
-                                           spi.requested_current_q);
+        executor.start_current_control(spi.requested_current_d,
+                                       spi.requested_current_q);
 
         spi.has_received_enable_current_control = false;
         spi.has_received_enable_velocity_control = false;
     } else if (spi.has_received_enable_velocity_control) {
-        executor.configure_speed_control(spi.requested_velocity);
+        executor.start_speed_control(spi.requested_velocity);
 
         spi.has_received_enable_velocity_control = false;
     }
@@ -258,10 +258,6 @@ void Board::initialize_state_machine() {
     state_machine.nested.add_enter_action(
         [&]() { executor.start_test_pwm(50.0f, 50.0f, 50.0f); },
         OperationalState::Precharge);
-
-    state_machine.nested.add_enter_action(
-        [&]() { executor.start_selected_control(); },
-        OperationalState::Boosting);
 
     //     Exit Actions
 
