@@ -152,7 +152,6 @@ map<pair<Pin, Pin>, TimerPeripheral*> Encoder::pin_timer_map = {
 TIM_HandleTypeDef* Time::global_timer = nullptr;
 set<TIM_HandleTypeDef*> Time::high_precision_timers = {};
 TIM_HandleTypeDef* Time::mid_precision_timer = &htim5;
-TIM_HandleTypeDef* Time::low_precision_timer = &htim7;
 
 TimerPeripheral timer1(&htim1, {ADVANCED}, "TIM 1");
 TimerPeripheral timer3(&htim3, {BASE}, "TIM 3");

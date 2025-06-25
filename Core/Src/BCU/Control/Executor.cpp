@@ -5,6 +5,13 @@ namespace BCU::Control {
 Executor::Executor(Actuators::MotorDriver &motor_driver)
     : motor_driver(motor_driver) {}
 
+void Executor::configure_current_control(float current_d_ref,
+                                         float current_q_ref) {}
+
+void Executor::configure_speed_control(float speed_ref) {}
+
+void Executor::start_selected_control() {}
+
 void Executor::stop() {
     switch (mode) {
         case ControlMode::IDLE:

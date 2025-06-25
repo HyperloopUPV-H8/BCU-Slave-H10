@@ -45,6 +45,11 @@ class Executor {
     void set_modulation_index(float modulation_index);
     void set_modulation_frequency_hz(float modulation_frequency_hz);
 
+    void configure_current_control(float current_d_ref, float current_q_ref);
+    void configure_speed_control(float speed_ref);
+
+    void start_selected_control();
+
     void stop();
 
     float *get_duty_cycle_u_ptr();
