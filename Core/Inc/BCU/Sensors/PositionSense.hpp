@@ -11,7 +11,7 @@ class PositionSense {
 
     using Sensor = EncoderSensor<samples>;
 
-    Speetec<samples> sensors[3]{
+    Speetec<samples> sensors[2]{
         Speetec<samples>{
             Pinout::speetec_1_1_pin,
             Pinout::speetec_1_2_pin,
@@ -20,11 +20,6 @@ class PositionSense {
         Speetec<samples>{
             Pinout::speetec_2_1_pin,
             Pinout::speetec_2_2_pin,
-            0.01,
-        },
-        Speetec<samples>{
-            Pinout::speetec_3_1_pin,
-            Pinout::speetec_3_2_pin,
             0.01,
         },
     };
@@ -50,7 +45,7 @@ class PositionSense {
     double *get_position_ptr();
     double *get_speed_ptr();
     double *get_acceleration_ptr();
-    Sensor::Direction *get_direction_ptr() {}
+    Sensor::Direction *get_direction_ptr();
 
     double *get_sensor_position_ptr(size_t index);
     double *get_sensor_speed_ptr(size_t index);

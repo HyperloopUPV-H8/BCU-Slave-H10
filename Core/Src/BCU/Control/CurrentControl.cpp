@@ -5,7 +5,7 @@ namespace BCU::Control {
 StaticTwoPhase clarke_transform(const StaticThreePhase &three_phase) {
     return StaticTwoPhase{
         (2.0 * three_phase.u - three_phase.v - three_phase.w) / 3.0,
-        M_SQRT3 * (three_phase.v - three_phase.w) / 3.0,
+        (double)M_SQRT3 * (three_phase.v - three_phase.w) / 3.0,
         (three_phase.u + three_phase.v + three_phase.w) / 3.0,
     };
 }
@@ -19,9 +19,9 @@ StaticThreePhase inverse_clarke_transform(const StaticTwoPhase &two_phase) {
 }
 
 RotatingTwoPhase park_transform(const StaticTwoPhase &two_phase,
-                                float angle_rad) {
-    float angle_sin{sin(angle_rad)};
-    float angle_cos{cos(angle_rad)};
+                                double angle_rad) {
+    double angle_sin{sin(angle_rad)};
+    double angle_cos{cos(angle_rad)};
 
     return RotatingTwoPhase{
         angle_cos * two_phase.alpha + angle_sin * two_phase.beta,
@@ -31,9 +31,9 @@ RotatingTwoPhase park_transform(const StaticTwoPhase &two_phase,
 }
 
 StaticTwoPhase inverse_park_transform(const RotatingTwoPhase &two_phase,
-                                      float angle_rad) {
-    float angle_sin{sin(angle_rad)};
-    float angle_cos{cos(angle_rad)};
+                                      double angle_rad) {
+    double angle_sin{sin(angle_rad)};
+    double angle_cos{cos(angle_rad)};
 
     return StaticTwoPhase{
         angle_sin * two_phase.d + angle_cos * two_phase.q,
@@ -46,7 +46,7 @@ CurrentControl::CurrentControl(VoltageGenerator &voltage_gen,
                                Sensors::CurrentSense &current_sense)
     : voltage_generator(voltage_gen), current_sense(current_sense) {}
 
-void CurrentControl::update(const float &electrical_angle_rad) {
+void CurrentControl::update(const double &electrical_angle_rad) {
     auto [alpha_current_measured, beta_current_measured, zero_current] =
         clarke_transform({*current_sense.get_average_phase_u_current(),
                           *current_sense.get_average_phase_v_current(),
@@ -102,43 +102,43 @@ void CurrentControl::reset() {
     q_current_control.reset();
 }
 
-float *CurrentControl::get_alpha_current_measured_ptr() {
+double *CurrentControl::get_alpha_current_measured_ptr() {
     return &alpha_current_measured;
 }
 
-float *CurrentControl::get_beta_current_measured_ptr() {
+double *CurrentControl::get_beta_current_measured_ptr() {
     return &beta_current_measured;
 }
 
-float *CurrentControl::get_d_current_measured_ptr() {
+double *CurrentControl::get_d_current_measured_ptr() {
     return &d_current_measured;
 }
 
-float *CurrentControl::get_q_current_measured_ptr() {
+double *CurrentControl::get_q_current_measured_ptr() {
     return &q_current_measured;
 }
 
-float *CurrentControl::get_d_current_reference_ptr() {
+double *CurrentControl::get_d_current_reference_ptr() {
     return &d_current_reference;
 }
 
-float *CurrentControl::get_d_voltage_target_ptr() { return &d_voltage_target; }
+double *CurrentControl::get_d_voltage_target_ptr() { return &d_voltage_target; }
 
-float *CurrentControl::get_q_current_reference_ptr() {
+double *CurrentControl::get_q_current_reference_ptr() {
     return &q_current_reference;
 }
 
-float *CurrentControl::get_q_voltage_target_ptr() { return &q_voltage_target; }
+double *CurrentControl::get_q_voltage_target_ptr() { return &q_voltage_target; }
 
-float *CurrentControl::get_d_current_error_ptr() { return &d_current_error; }
+double *CurrentControl::get_d_current_error_ptr() { return &d_current_error; }
 
-float *CurrentControl::get_q_current_error_ptr() { return &q_current_error; }
+double *CurrentControl::get_q_current_error_ptr() { return &q_current_error; }
 
-float *CurrentControl::get_alpha_voltage_target_ptr() {
+double *CurrentControl::get_alpha_voltage_target_ptr() {
     return &alpha_voltage_target;
 }
 
-float *CurrentControl::get_beta_voltage_target_ptr() {
+double *CurrentControl::get_beta_voltage_target_ptr() {
     return &beta_voltage_target;
 }
 

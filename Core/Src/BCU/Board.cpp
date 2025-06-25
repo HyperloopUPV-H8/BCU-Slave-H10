@@ -35,10 +35,14 @@ Board::Board() {
     initialize_state_machine();
     initialize_protections();
 
+    position_sense.turn_on();
+
     spi.start();
 
     Time::register_low_precision_alarm(
         1, [&]() { protection_manager.update_low_frequency(); });
+
+    Time::register_low_precision_alarm(100, [&]() { position_sense.read(); });
 
     Time::register_mid_precision_alarm(
         1000, [&]() { motor_sensors.read_dc_link_voltage(); });
@@ -113,9 +117,45 @@ void Board::initialize_state_machine() {
             return spi.master_general_state == GeneralState::Operational;
         });
 
+    state_machine.general.add_transition(
+        GeneralState::Connecting, GeneralState::Fault,
+        [&]() { return spi.master_general_state == GeneralState::Fault; });
+
+    state_machine.general.add_transition(
+        GeneralState::Operational, GeneralState::Fault,
+        [&]() { return spi.master_general_state == GeneralState::Fault; });
+
     // Operational State Machine
 
     //     Transitions
+
+    state_machine.nested.add_transition(
+        OperationalState::Idle, OperationalState::Precharge, [&]() {
+            return spi.master_general_state == GeneralState::Operational &&
+                   spi.master_nested_state == OperationalState::Precharge;
+        });
+
+    state_machine.nested.add_transition(OperationalState::Precharge,
+                                        OperationalState::Ready, [&]() {
+                                            return false;  // TODO
+                                        });
+
+    state_machine.nested.add_transition(OperationalState::Precharge,
+                                        OperationalState::Testing, [&]() {
+                                            return false;  // TODO
+                                        });
+
+    state_machine.nested.add_transition(
+        OperationalState::Precharge, OperationalState::Idle, [&]() {
+            return spi.master_general_state == GeneralState::Operational &&
+                   spi.master_nested_state == OperationalState::Idle;
+        });
+
+    state_machine.nested.add_transition(
+        OperationalState::Ready, OperationalState::Boosting, [&]() {
+            return spi.master_general_state == GeneralState::Operational &&
+                   spi.master_nested_state == OperationalState::Boosting;
+        });
 
     //     Enter Actions
 
@@ -134,12 +174,6 @@ void Board::initialize_state_machine() {
             motor_driver.set_duty_cycle_w(50.0f);
         },
         OperationalState::Precharge);
-
-    state_machine.nested.add_enter_action([&]() {
-        leds.signal_inverter_on();
-        motor_driver.turn_on();
-        executor.start_space_vector(0.8f, 1000.0f);
-    }, );
 
     //     Exit Actions
 

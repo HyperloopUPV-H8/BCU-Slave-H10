@@ -51,7 +51,21 @@ class Board {
 
     Control::Executor executor{motor_driver};
 
-    Communication::SPI spi{};
+    Communication::SPI spi{
+        &state_machine.general.current_state,
+        &state_machine.nested.current_state,
+        position_sense.get_position_ptr(),
+        position_sense.get_speed_ptr(),
+        position_sense.get_acceleration_ptr(),
+        (uint8_t *)position_sense.get_direction_ptr(),
+        position_sense.get_sensor_position_ptr(0),
+        position_sense.get_sensor_speed_ptr(0),
+        position_sense.get_sensor_acceleration_ptr(0),
+        (uint8_t *)position_sense.get_sensor_direction_ptr(0),
+        position_sense.get_sensor_position_ptr(1),
+        position_sense.get_sensor_speed_ptr(1),
+        position_sense.get_sensor_acceleration_ptr(1),
+        (uint8_t *)position_sense.get_sensor_direction_ptr(1)};
 
     STLIBHandle stlib;
 
