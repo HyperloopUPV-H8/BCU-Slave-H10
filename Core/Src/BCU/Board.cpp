@@ -117,14 +117,6 @@ void Board::initialize_state_machine() {
             return spi.master_general_state == GeneralState::Operational;
         });
 
-    state_machine.general.add_transition(
-        GeneralState::Connecting, GeneralState::Fault,
-        [&]() { return spi.master_general_state == GeneralState::Fault; });
-
-    state_machine.general.add_transition(
-        GeneralState::Operational, GeneralState::Fault,
-        [&]() { return spi.master_general_state == GeneralState::Fault; });
-
     // Operational State Machine
 
     //     Transitions
@@ -183,6 +175,14 @@ void Board::initialize_state_machine() {
             motor_driver.turn_on();
         },
         OperationalState::Idle);
+}
+
+void Board::initialize_protections() {
+    add_high_frequency_protection(
+        &spi.master_general_state,
+        Boundary<StateMachine::state_id, EQUALS>(GeneralState::Fault));
+
+    protection_manager.start();
 }
 
 }  // namespace BCU
